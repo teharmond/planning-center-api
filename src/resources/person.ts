@@ -1,21 +1,102 @@
 import { PlanningCenter } from "../client";
-import { Person, PersonAttributes, ApiResponse } from "../types";
+import {
+  Person,
+  PersonAttributes,
+  PersonCreateAttributes,
+  PersonUpdateAttributes,
+  ApiResponse,
+} from "../types";
+
+export type PersonInclude =
+  | "addresses"
+  | "emails"
+  | "field_data"
+  | "households"
+  | "inactive_reason"
+  | "marital_status"
+  | "name_prefix"
+  | "name_suffix"
+  | "organization"
+  | "person_apps"
+  | "phone_numbers"
+  | "platform_notifications"
+  | "primary_campus"
+  | "school"
+  | "social_profiles";
+
+type ArrayOfPersonInclude<T> = T extends readonly [infer First, ...infer Rest]
+  ? First extends PersonInclude
+    ? [First, ...ArrayOfPersonInclude<Rest>]
+    : never
+  : T extends readonly []
+  ? []
+  : T extends readonly (infer Item)[]
+  ? Item extends PersonInclude
+    ? readonly Item[]
+    : never
+  : never;
+
+export type PersonQueryOptions = {
+  include?: PersonInclude | readonly PersonInclude[];
+};
 
 export class PersonResource {
   constructor(private client: PlanningCenter, private personId?: string) {}
 
-  async get(): Promise<ApiResponse<Person>> {
+  private buildQueryString(options?: PersonQueryOptions): string {
+    if (!options?.include) return "";
+
+    const validIncludes: PersonInclude[] = [
+      "addresses",
+      "emails",
+      "field_data",
+      "households",
+      "inactive_reason",
+      "marital_status",
+      "name_prefix",
+      "name_suffix",
+      "organization",
+      "person_apps",
+      "phone_numbers",
+      "platform_notifications",
+      "primary_campus",
+      "school",
+      "social_profiles",
+    ];
+
+    const validateInclude = (value: string): void => {
+      if (!validIncludes.includes(value as PersonInclude)) {
+        throw new Error(
+          `Invalid include value: "${value}". Valid options are: ${validIncludes.join(", ")}`
+        );
+      }
+    };
+
+    if (Array.isArray(options.include)) {
+      options.include.forEach(validateInclude);
+      return `?include=${options.include.join(",")}`;
+    } else {
+      validateInclude(options.include as string);
+      return `?include=${options.include}`;
+    }
+  }
+
+  async get<const T extends readonly PersonInclude[]>(
+    options?: { include?: PersonInclude | ArrayOfPersonInclude<T> }
+  ): Promise<ApiResponse<Person>> {
     if (!this.personId) {
       throw new Error("Person ID is required for get operation");
     }
 
     return this.client.request<Person>(
       "GET",
-      `/people/v2/people/${this.personId}`
+      `/people/v2/people/${this.personId}${this.buildQueryString(options)}`
     );
   }
 
-  async update(attributes: PersonAttributes): Promise<ApiResponse<Person>> {
+  async update(
+    attributes: PersonUpdateAttributes
+  ): Promise<ApiResponse<Person>> {
     if (!this.personId) {
       throw new Error("Person ID is required for update operation");
     }
@@ -46,7 +127,9 @@ export class PersonResource {
     );
   }
 
-  async create(attributes: PersonAttributes): Promise<ApiResponse<Person>> {
+  async create(
+    attributes: PersonCreateAttributes
+  ): Promise<ApiResponse<Person>> {
     const body = {
       data: {
         type: "Person",

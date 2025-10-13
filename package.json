@@ -2,12 +2,28 @@
   "name": "planning-center-api",
   "version": "0.0.1",
   "description": "A TypeScript toolkit for building applications on top of the Planning Center API.",
-  "license": "Apache-2.0",
+  "license": "MIT",
+  "author": "Thomas Harmond <hey@thomasharmond.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teharmond/planning-center-api.git"
+  },
+  "keywords": [
+    "planning-center",
+    "pco",
+    "api",
+    "wrapper",
+    "typescript"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^24.7.2",

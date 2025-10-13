@@ -58,6 +58,59 @@ export interface PersonAttributes {
   school_type_other?: string;
 }
 
+export interface PersonCreateAttributes {
+  accounting_administrator?: boolean;
+  anniversary?: string;
+  birthdate?: string;
+  child?: boolean;
+  given_name?: string;
+  grade?: number;
+  graduation_year?: number;
+  middle_name?: string;
+  nickname?: string;
+  people_permissions?: string;
+  site_administrator?: boolean;
+  gender?: string;
+  inactivated_at?: string;
+  medical_notes?: string;
+  membership?: string;
+  stripe_customer_identifier?: string;
+  created_by_id?: string;
+  avatar?: string;
+  first_name?: string;
+  last_name?: string;
+  gender_id?: string;
+  primary_campus_id?: string;
+  remote_id?: string;
+  status?: string;
+}
+
+export interface PersonUpdateAttributes {
+  accounting_administrator?: boolean;
+  anniversary?: string;
+  birthdate?: string;
+  child?: boolean;
+  given_name?: string;
+  grade?: number;
+  graduation_year?: number;
+  middle_name?: string;
+  nickname?: string;
+  people_permissions?: string;
+  site_administrator?: boolean;
+  gender?: string;
+  inactivated_at?: string;
+  medical_notes?: string;
+  membership?: string;
+  stripe_customer_identifier?: string;
+  avatar?: string;
+  first_name?: string;
+  last_name?: string;
+  gender_id?: string;
+  primary_campus_id?: string;
+  remote_id?: string;
+  status?: string;
+}
+
 export interface Person {
   id: string;
   type: "Person";
