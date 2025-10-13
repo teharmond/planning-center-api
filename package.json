@@ -1,0 +1,16 @@
+{
+  "name": "planning-center-api",
+  "version": "0.0.1",
+  "description": "A TypeScript toolkit for building applications on top of the Planning Center API.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.2",
+    "typescript": "^5.9.3"
+  }
+}
