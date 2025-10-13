@@ -19,6 +19,7 @@ export interface PlanningCenterConfig {
   auth?: AuthConfig; // Optional - will use ENV variables if not provided
   rateLimitDelay?: number; // ms to wait between requests (default: 100)
   maxRetries?: number; // max retries for rate limit (default: 3)
+  autoPaginate?: boolean; // auto-fetch all pages (default: true)
 }
 
 export interface RefreshedTokens {
@@ -29,6 +30,21 @@ export interface RefreshedTokens {
 export interface ApiResponse<T = any> {
   data: T;
   tokens?: RefreshedTokens;
+  meta?: {
+    total_count?: number;
+    count?: number;
+    next?: { offset?: number };
+    can_order_by?: string[];
+    can_query_by?: string[];
+    can_include?: string[];
+    can_filter?: string[];
+    parent?: { id: string; type: string };
+  };
+  links?: {
+    self?: string;
+    next?: string;
+    prev?: string;
+  };
 }
 
 export interface PersonAttributes {

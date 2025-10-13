@@ -1,5 +1,16 @@
-import { PlanningCenterConfig, AuthConfig, RefreshedTokens } from "./types";
-import { PeopleApp } from "./apps/people";
+import { PlanningCenterConfig, AuthConfig, RefreshedTokens } from "./types.js";
+import { PeopleApp } from "./apps/people.js";
+import { ServicesApp } from "./apps/services.js";
+import { GroupsApp } from "./apps/groups.js";
+import { CheckInsApp } from "./apps/check-ins.js";
+import { HomeApp } from "./apps/home.js";
+import { ChatApp } from "./apps/chat.js";
+import { RegistrationsApp } from "./apps/registrations.js";
+import { CalendarApp } from "./apps/calendar.js";
+import { GivingApp } from "./apps/giving.js";
+import { ApiApp } from "./apps/api.js";
+import { PublishingApp } from "./apps/publishing.js";
+import { WebhooksApp } from "./apps/webhooks.js";
 
 export class PlanningCenter {
   private config: PlanningCenterConfig;
@@ -15,6 +26,7 @@ export class PlanningCenter {
     this.config = {
       rateLimitDelay: 100,
       maxRetries: 3,
+      autoPaginate: true,
       ...config,
     };
 
@@ -70,11 +82,56 @@ export class PlanningCenter {
     return new PeopleApp(this);
   }
 
+  get services() {
+    return new ServicesApp(this);
+  }
+
+  get groups() {
+    return new GroupsApp(this);
+  }
+
+  get checkIns() {
+    return new CheckInsApp(this);
+  }
+
+  get home() {
+    return new HomeApp(this);
+  }
+
+  get chat() {
+    return new ChatApp(this);
+  }
+
+  get registrations() {
+    return new RegistrationsApp(this);
+  }
+
+  get calendar() {
+    return new CalendarApp(this);
+  }
+
+  get giving() {
+    return new GivingApp(this);
+  }
+
+  get api() {
+    return new ApiApp(this);
+  }
+
+  get publishing() {
+    return new PublishingApp(this);
+  }
+
+  get webhooks() {
+    return new WebhooksApp(this);
+  }
+
   async request<T = any>(
     method: string,
     path: string,
-    body?: any
-  ): Promise<{ data: T; tokens?: RefreshedTokens }> {
+    body?: any,
+    options?: { autoPaginate?: boolean }
+  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
     this.wasTokenRefreshed = false;
 
     // Check if token needs proactive refresh
@@ -82,6 +139,24 @@ export class PlanningCenter {
       await this.refreshAccessToken();
     }
 
+    const autoPaginate =
+      options?.autoPaginate !== undefined
+        ? options.autoPaginate
+        : this.config.autoPaginate;
+
+    // For GET requests with autoPaginate, collect all pages
+    if (method === "GET" && autoPaginate) {
+      return this.requestWithPagination<T>(path);
+    }
+
+    return this.singleRequest<T>(method, path, body);
+  }
+
+  private async singleRequest<T = any>(
+    method: string,
+    path: string,
+    body?: any
+  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
     await this.handleRateLimit();
 
     let retries = 0;
@@ -132,21 +207,27 @@ export class PlanningCenter {
         }
 
         // Handle empty responses (like 204 No Content for DELETE)
-        let data: T;
         if (
           response.status === 204 ||
           response.headers.get("content-length") === "0"
         ) {
-          data = undefined as T;
-        } else {
-          data = (await response.json()) as T;
+          return {
+            data: undefined as T,
+            tokens: this.wasTokenRefreshed
+              ? this.getRefreshedTokens()
+              : undefined,
+          };
         }
 
+        const jsonResponse = (await response.json()) as any;
+
         return {
-          data,
+          data: jsonResponse.data as T,
           tokens: this.wasTokenRefreshed
             ? this.getRefreshedTokens()
             : undefined,
+          meta: jsonResponse.meta,
+          links: jsonResponse.links,
         };
       } catch (error) {
         if (retries >= maxRetries) {
@@ -158,6 +239,50 @@ export class PlanningCenter {
     }
 
     throw new Error("Request failed after all retries");
+  }
+
+  private async requestWithPagination<T = any>(
+    path: string
+  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
+    const allData: any[] = [];
+    let nextUrl: string | null = path;
+    let lastMeta: any;
+    let lastLinks: any;
+
+    while (nextUrl) {
+      const response: {
+        data: any;
+        tokens?: RefreshedTokens;
+        meta?: any;
+        links?: any;
+      } = await this.singleRequest<any>("GET", nextUrl);
+
+      if (Array.isArray(response.data)) {
+        allData.push(...response.data);
+      } else {
+        // Single item response, return as-is
+        return response as any;
+      }
+
+      lastMeta = response.meta;
+      lastLinks = response.links;
+
+      // Check for next page
+      if (response.links?.next) {
+        // Extract path from full URL
+        const url: URL = new URL(response.links.next);
+        nextUrl = url.pathname + url.search;
+      } else {
+        nextUrl = null;
+      }
+    }
+
+    return {
+      data: allData as T,
+      tokens: this.wasTokenRefreshed ? this.getRefreshedTokens() : undefined,
+      meta: lastMeta,
+      links: lastLinks,
+    };
   }
 
   private async getHeaders(): Promise<Record<string, string>> {
