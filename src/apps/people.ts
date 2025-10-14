@@ -1,6 +1,7 @@
 import { PlanningCenter } from "../client.js";
 import { PersonResource } from "../resources/people/person.js";
 import { PeopleListResource, PeopleListOptions } from "../resources/people/people-list.js";
+import { WorkflowResource } from "../resources/people/workflow.js";
 import { ApiResponse, Person } from "../types.js";
 
 export class PeopleApp {
@@ -8,6 +9,10 @@ export class PeopleApp {
 
   person(id?: string): PersonResource {
     return new PersonResource(this.client, id);
+  }
+
+  workflow(id?: string): WorkflowResource {
+    return new WorkflowResource(this.client, id);
   }
 
   async list(options?: PeopleListOptions): Promise<ApiResponse<Person[]>> {

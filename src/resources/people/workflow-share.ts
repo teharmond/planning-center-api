@@ -11,6 +11,11 @@ export interface WorkflowShare {
   };
 }
 
+export interface WorkflowShareUpdateAttributes {
+  group?: string;
+  permission?: string;
+}
+
 export class WorkflowShareResource {
   constructor(
     private client: PlanningCenter,
@@ -27,6 +32,32 @@ export class WorkflowShareResource {
   async get(workflowShareId: string): Promise<ApiResponse<WorkflowShare>> {
     return this.client.request<WorkflowShare>(
       "GET",
+      `/people/v2/people/${this.personId}/workflow_shares/${workflowShareId}`
+    );
+  }
+
+  async update(
+    workflowShareId: string,
+    attributes: WorkflowShareUpdateAttributes
+  ): Promise<ApiResponse<WorkflowShare>> {
+    const body = {
+      data: {
+        type: "WorkflowShare",
+        id: workflowShareId,
+        attributes,
+      },
+    };
+
+    return this.client.request<WorkflowShare>(
+      "PATCH",
+      `/people/v2/people/${this.personId}/workflow_shares/${workflowShareId}`,
+      body
+    );
+  }
+
+  async delete(workflowShareId: string): Promise<ApiResponse<void>> {
+    return this.client.request<void>(
+      "DELETE",
       `/people/v2/people/${this.personId}/workflow_shares/${workflowShareId}`
     );
   }
