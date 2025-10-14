@@ -147,6 +147,29 @@ export class WorkflowResource {
     );
   }
 
+  async createCard(attributes: {
+    person_id: string;
+    assignee_id?: string;
+    sticky_assignment?: boolean;
+  }): Promise<ApiResponse<WorkflowCard>> {
+    if (!this.workflowId) {
+      throw new Error("Workflow ID is required for creating card");
+    }
+
+    const body = {
+      data: {
+        type: "WorkflowCard",
+        attributes,
+      },
+    };
+
+    return this.client.request<WorkflowCard>(
+      "POST",
+      `/people/v2/workflows/${this.workflowId}/cards`,
+      body
+    );
+  }
+
   async getCategory(): Promise<ApiResponse<WorkflowCategory>> {
     if (!this.workflowId) {
       throw new Error("Workflow ID is required for getting category");

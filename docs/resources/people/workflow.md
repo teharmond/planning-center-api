@@ -87,6 +87,24 @@ const response = await client.people.workflow('123').listCards();
 console.log(response.data);
 ```
 
+### `createCard(attributes)`
+
+Create a new workflow card in this workflow.
+
+**Parameters:**
+- `attributes.person_id` (required): ID of the person for this card
+- `attributes.assignee_id` (optional): ID of the person to assign to
+- `attributes.sticky_assignment` (optional): Whether the assignment is sticky
+
+**Example:**
+```typescript
+const response = await client.people.workflow('123').createCard({
+  person_id: '456',
+  assignee_id: '789',
+  sticky_assignment: true
+});
+```
+
 ### `getCategory()`
 
 Get the category for this workflow.
@@ -176,6 +194,7 @@ const response = await client.people.workflow('123').createShare({
 - `PATCH /people/v2/workflows/{id}`
 - `DELETE /people/v2/workflows/{id}`
 - `GET /people/v2/workflows/{id}/cards`
+- `POST /people/v2/workflows/{id}/cards`
 - `GET /people/v2/workflows/{id}/category`
 - `GET /people/v2/workflows/{id}/steps`
 - `GET /people/v2/workflows/{id}/shared_people`

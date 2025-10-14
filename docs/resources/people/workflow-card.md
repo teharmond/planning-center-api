@@ -36,6 +36,214 @@ const response = await client.people.person('123').workflowCards().get('456');
 console.log(response.data);
 ```
 
+### `update(workflowCardId, attributes)`
+
+Update a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `attributes.sticky_assignment` (optional): Whether the assignment is sticky
+- `attributes.assignee_id` (optional): ID of the person to assign to
+- `attributes.person_id` (optional): ID of the person associated with the card
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().update('456', {
+  assignee_id: '789',
+  sticky_assignment: true
+});
+```
+
+### `delete(workflowCardId)`
+
+Delete a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().delete('456');
+```
+
+### `goBack(workflowCardId)`
+
+Move a workflow card back to the previous step.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().goBack('456');
+```
+
+### `promote(workflowCardId)`
+
+Promote a workflow card to the next step.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().promote('456');
+```
+
+### `remove(workflowCardId)`
+
+Remove a workflow card (marks it as removed).
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().remove('456');
+```
+
+### `restore(workflowCardId)`
+
+Restore a removed workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().restore('456');
+```
+
+### `sendEmail(workflowCardId, subject, note)`
+
+Send an email related to a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `subject`: Email subject
+- `note`: Email body/note
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().sendEmail(
+  '456',
+  'Thanks for visiting!',
+  'It was great to meet you this past Sunday!'
+);
+```
+
+### `skipStep(workflowCardId)`
+
+Skip the current step in the workflow.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().skipStep('456');
+```
+
+### `snooze(workflowCardId, duration)`
+
+Snooze a workflow card for a specified duration.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `duration`: Duration in days to snooze
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().snooze('456', 15);
+```
+
+### `unsnooze(workflowCardId)`
+
+Unsnooze a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().unsnooze('456');
+```
+
+### `listActivities(workflowCardId)`
+
+List all activities for a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Returns:** Array of workflow card activities
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().listActivities('456');
+console.log(response.data);
+```
+
+### `getCurrentStep(workflowCardId)`
+
+Get the current step of a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Returns:** Workflow step object
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().getCurrentStep('456');
+console.log(response.data.attributes.name);
+```
+
+### `listNotes(workflowCardId)`
+
+List all notes for a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Returns:** Array of notes
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().listNotes('456');
+console.log(response.data);
+```
+
+### `getPerson(workflowCardId)`
+
+Get the person associated with a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Returns:** Person object
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().getPerson('456');
+console.log(response.data);
+```
+
+### `getWorkflow(workflowCardId)`
+
+Get the workflow associated with a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+
+**Returns:** Workflow object
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().getWorkflow('456');
+console.log(response.data.attributes.name);
+```
+
 ### `assignee(workflowCardId)`
 
 Access the assignee resource for a workflow card.
@@ -52,6 +260,18 @@ const assignee = await client.people.person('123')
   .assignee('456')
   .get();
 console.log(assignee.data);
+```
+
+## Creating Workflow Cards
+
+To create a new workflow card, use the workflow resource:
+
+```typescript
+const response = await client.people.workflow('789').createCard({
+  person_id: '123',
+  assignee_id: '456',
+  sticky_assignment: true
+});
 ```
 
 ## Workflow Card Object
@@ -109,4 +329,20 @@ console.log(response.data.attributes.last_name);
 
 - `GET /people/v2/people/{person_id}/workflow_cards`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}`
+- `PATCH /people/v2/people/{person_id}/workflow_cards/{id}`
+- `DELETE /people/v2/people/{person_id}/workflow_cards/{id}`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/go_back`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/promote`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/remove`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/restore`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/send_email`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/skip_step`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/snooze`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/unsnooze`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/activities`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/assignee`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/current_step`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/notes`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/person`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/workflow`
+- `POST /people/v2/workflows/{workflow_id}/cards` (via workflow resource)
