@@ -1,11 +1,11 @@
-import { PlanningCenter } from "../client.js";
+import { PlanningCenter } from "../../client.js";
 import {
   Person,
   PersonAttributes,
   PersonCreateAttributes,
   PersonUpdateAttributes,
   ApiResponse,
-} from "../types.js";
+} from "../../types.js";
 import { WorkflowCardResource } from "./workflow-card.js";
 import { WorkflowShareResource } from "./workflow-share.js";
 

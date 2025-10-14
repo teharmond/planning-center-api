@@ -1,5 +1,5 @@
-import { PlanningCenter } from "../client.js";
-import { ApiResponse } from "../types.js";
+import { PlanningCenter } from "../../client.js";
+import { ApiResponse } from "../../types.js";
 
 export interface WorkflowShare {
   type: "WorkflowShare";
