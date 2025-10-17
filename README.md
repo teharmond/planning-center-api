@@ -59,6 +59,8 @@ const pc = new PlanningCenter({
     bearerToken: "your_access_token",
     refreshToken: "your_refresh_token", // required for autoRefresh
     autoRefresh: true, // enables automatic token refresh
+    clientId: "your_oauth_client_id", // required for token refresh
+    clientSecret: "your_oauth_client_secret", // required for token refresh
     lastRefreshedAt: new Date(), // optional, for proactive refresh
     tokenExpiryMs: 7200000, // optional, defaults to 2 hours
     onTokenRefresh: async (tokens) => {
@@ -71,6 +73,10 @@ const pc = new PlanningCenter({
   },
 });
 ```
+
+**Note:** If you don't provide `clientId` and `clientSecret`, the client will look for these environment variables:
+- `PCO_CLIENT_ID` or `NEXT_PUBLIC_PCO_CLIENT_ID`
+- `PCO_SECRET` or `PCO_CLIENT_SECRET`
 
 ### Get a Person
 
@@ -146,6 +152,8 @@ const pc = new PlanningCenter({
     bearerToken: accessToken,
     refreshToken: refreshToken,
     autoRefresh: true,
+    clientId: process.env.PCO_CLIENT_ID!, // OAuth client ID
+    clientSecret: process.env.PCO_SECRET!, // OAuth client secret
     lastRefreshedAt: new Date("2024-01-01T10:00:00Z"), // When token was issued
     tokenExpiryMs: 7200000, // 2 hours (default)
     onTokenRefresh: async (tokens) => {

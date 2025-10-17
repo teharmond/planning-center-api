@@ -12,6 +12,8 @@ export interface BearerAuthConfig {
   lastRefreshedAt?: Date | string | number; // Optional: when token was last refreshed
   tokenExpiryMs?: number; // Optional: token lifetime in ms (default: 7200000 = 2 hours)
   onTokenRefresh?: (tokens: RefreshedTokens) => void | Promise<void>; // Callback when tokens are refreshed
+  clientId?: string; // Required for OAuth token refresh
+  clientSecret?: string; // Required for OAuth token refresh
 }
 
 export type AuthConfig = BasicAuthConfig | BearerAuthConfig;

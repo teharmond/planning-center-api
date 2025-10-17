@@ -346,22 +346,41 @@ export class PlanningCenter {
       return false;
     }
 
+    // For OAuth token refresh, we need client_id and client_secret
+    if (this.auth.type !== "bearer") {
+      return false;
+    }
+
+    const clientId = this.auth.clientId || process.env.PCO_CLIENT_ID || process.env.NEXT_PUBLIC_PCO_CLIENT_ID;
+    const clientSecret = this.auth.clientSecret || process.env.PCO_SECRET || process.env.PCO_CLIENT_SECRET;
+
+    if (!clientId || !clientSecret) {
+      console.error("OAuth token refresh requires clientId and clientSecret");
+      return false;
+    }
+
     try {
+      const params = new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: this.currentTokens.refresh,
+      });
+
       const response = await fetch(
         "https://api.planningcenteronline.com/oauth/token",
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: JSON.stringify({
-            grant_type: "refresh_token",
-            refresh_token: this.currentTokens.refresh,
-          }),
+          body: params.toString(),
         }
       );
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Token refresh failed:", response.status, errorText);
         return false;
       }
 
@@ -378,7 +397,7 @@ export class PlanningCenter {
       this.tokenRefreshedAt = Date.now();
 
       // Call the onTokenRefresh callback if provided
-      if (this.auth.type === "bearer" && this.auth.onTokenRefresh) {
+      if (this.auth.onTokenRefresh) {
         const tokens: RefreshedTokens = {
           accessToken: this.currentTokens.access,
           refreshToken: this.currentTokens.refresh!,
@@ -387,7 +406,8 @@ export class PlanningCenter {
       }
 
       return true;
-    } catch {
+    } catch (error) {
+      console.error("Token refresh error:", error);
       return false;
     }
   }
