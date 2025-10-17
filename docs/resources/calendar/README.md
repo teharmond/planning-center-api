@@ -4,8 +4,8 @@ Documentation for Planning Center Calendar API resources.
 
 ## Available Resources
 
-- Events List - List and filter calendar events
-- Tags List - List calendar tags
+- [Events List](./events-list.md) - List and filter calendar events
+- [Tags List](./tags-list.md) - List calendar tags
 
 ## Common Use Cases
 

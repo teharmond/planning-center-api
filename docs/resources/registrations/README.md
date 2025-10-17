@@ -4,9 +4,9 @@ Documentation for Planning Center Registrations API resources.
 
 ## Available Resources
 
-- Signups List - List and filter signups/events
-- Categories List - List event categories
-- Campuses List - List campuses
+- [Signups List](./signups-list.md) - List and filter signups/events
+- [Categories List](./categories-list.md) - List event categories
+- [Campuses List](./campuses-list.md) - List campuses
 
 ## Common Use Cases
 

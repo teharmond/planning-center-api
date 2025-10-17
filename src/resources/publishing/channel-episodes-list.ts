@@ -5,11 +5,20 @@ export interface ChannelEpisodesListOptions {
   per_page?: number; // default: 25, min: 1, max: 100
   offset?: number;
   where?: {
+    search?: string;
     series_id?: number;
-    published_to_church_center?: boolean;
+    services_plan_remote_identifier?: string;
+    services_service_type_remote_identifier?: string;
   };
   order?: string;
   include?: string;
+  filter?:
+    | "published_live"
+    | "not_published_live"
+    | "connected_to_services"
+    | "not_connected_to_services"
+    | "published_on_church_center"
+    | string;
 }
 
 export class ChannelEpisodesListResource {
@@ -43,6 +52,10 @@ export class ChannelEpisodesListResource {
 
     if (options?.include) {
       params.append("include", options.include);
+    }
+
+    if (options?.filter) {
+      params.append("filter", options.filter);
     }
 
     const queryString = params.toString();

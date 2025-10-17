@@ -4,7 +4,16 @@ import { Event, ApiResponse } from "../../types.js";
 export interface EventsListOptions {
   per_page?: number; // default: 25, min: 1, max: 100
   offset?: number;
-  where?: Record<string, any>;
+  where?: {
+    approval_status?: string;
+    created_at?: string;
+    name?: string;
+    feed_id?: string;
+    percent_approved?: number;
+    percent_rejected?: number;
+    updated_at?: string;
+    visible_in_church_center?: boolean;
+  };
   order?: string;
   include?: string;
   filter?: "future" | string;
