@@ -154,3 +154,50 @@ export interface Group {
   type: "Group";
   attributes: GroupAttributes;
 }
+
+export interface TagAttributes {
+  name?: string;
+  position?: number;
+}
+
+export interface Tag {
+  id: string;
+  type: "Tag";
+  attributes: TagAttributes;
+}
+
+export interface CampusAttributes {
+  name?: string;
+  description?: string;
+  time_zone?: string;
+  latitude?: number;
+  longitude?: number;
+  street?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  country?: string;
+  phone_number?: string;
+  website?: string;
+  avatar_url?: string;
+}
+
+export interface Campus {
+  id: string;
+  type: "Campus";
+  attributes: CampusAttributes;
+}
+
+export interface GroupTypeAttributes {
+  name?: string;
+  description?: string;
+  church_center_visible?: boolean;
+  position?: number;
+  color?: string;
+}
+
+export interface GroupType {
+  id: string;
+  type: "GroupType";
+  attributes: GroupTypeAttributes;
+}

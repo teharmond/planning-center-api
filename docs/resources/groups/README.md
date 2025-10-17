@@ -5,6 +5,9 @@ Documentation for Planning Center Groups API resources.
 ## Available Resources
 
 - [Groups List](./groups-list.md) - List and filter groups
+- [Tags List](./tags-list.md) - List group tags
+- [Campuses List](./campuses-list.md) - List campuses
+- [Group Types List](./group-types-list.md) - List group types
 
 ## Overview
 
@@ -31,6 +34,21 @@ The Groups app in Planning Center helps churches organize and manage their small
    const groups = await client.groups.list({
      filter: { campus: [1, 2, 3] }
    });
+   ```
+
+4. **List all tags**
+   ```typescript
+   const tags = await client.groups.listTags();
+   ```
+
+5. **List all campuses**
+   ```typescript
+   const campuses = await client.groups.listCampuses();
+   ```
+
+6. **List all group types**
+   ```typescript
+   const groupTypes = await client.groups.listGroupTypes();
    ```
 
 ## Base URL
