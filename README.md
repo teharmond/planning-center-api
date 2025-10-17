@@ -50,17 +50,24 @@ const pc = new PlanningCenter({
 });
 ```
 
-### Bearer Token Authentication
+### Bearer Token Authentication with Auto-Refresh
 
 ```typescript
 const pc = new PlanningCenter({
   auth: {
     type: "bearer",
     bearerToken: "your_access_token",
-    refreshToken: "your_refresh_token", // optional
-    autoRefresh: true, // optional, defaults to false
+    refreshToken: "your_refresh_token", // required for autoRefresh
+    autoRefresh: true, // enables automatic token refresh
     lastRefreshedAt: new Date(), // optional, for proactive refresh
     tokenExpiryMs: 7200000, // optional, defaults to 2 hours
+    onTokenRefresh: async (tokens) => {
+      // This callback is called whenever tokens are refreshed
+      console.log("New access token:", tokens.accessToken);
+      console.log("New refresh token:", tokens.refreshToken);
+      // Save these tokens to your database or storage
+      await saveTokens(tokens);
+    },
   },
 });
 ```
@@ -68,9 +75,8 @@ const pc = new PlanningCenter({
 ### Get a Person
 
 ```typescript
-const { data, tokens } = await pc.people.person("123").get();
+const { data } = await pc.people.person("123").get();
 console.log(data); // Person object
-console.log(tokens); // Refreshed tokens if auto-refresh is enabled
 ```
 
 ### Create a Person
@@ -122,28 +128,43 @@ Automatically refreshes when a request fails with 401 Unauthorized.
 
 If you provide `lastRefreshedAt`, it will proactively refresh tokens 5 minutes before they expire (default 2 hour expiry).
 
+### Using the onTokenRefresh Callback
+
+The recommended way to handle token refresh is to provide an `onTokenRefresh` callback. This callback is called automatically whenever tokens are refreshed (either reactively or proactively), allowing you to save the new tokens to your database or storage:
+
 ```typescript
+// Example: Create a singleton client in your app
+import { PlanningCenter } from "planning-center-api";
+
+let accessToken = "initial_access_token";
+let refreshToken = "initial_refresh_token";
+
 const pc = new PlanningCenter({
   auth: {
     type: "bearer",
-    bearerToken: "your_access_token",
-    refreshToken: "your_refresh_token",
+    bearerToken: accessToken,
+    refreshToken: refreshToken,
     autoRefresh: true,
     lastRefreshedAt: new Date("2024-01-01T10:00:00Z"), // When token was issued
     tokenExpiryMs: 7200000, // 2 hours (default)
+    onTokenRefresh: async (tokens) => {
+      // This is called automatically when tokens are refreshed
+      accessToken = tokens.accessToken;
+      refreshToken = tokens.refreshToken;
+
+      // Save to your database
+      await db.updateTokens({
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        lastRefreshedAt: new Date(),
+      });
+    },
   },
 });
 
-// Will automatically refresh if within 5 minutes of expiry
-const { data, tokens } = await pc.people.person("123").get();
-
-// Tokens are only returned when they were refreshed
-if (tokens) {
-  console.log("Token was refreshed!");
-  console.log("New access token:", tokens.accessToken);
-  console.log("New refresh token:", tokens.refreshToken);
-  // Store these and update lastRefreshedAt to Date.now()
-}
+// Now you can use the client throughout your app
+// and it will automatically handle token refresh
+const { data } = await pc.people.person("123").get();
 ```
 
 ## API Reference
@@ -157,9 +178,10 @@ Main client class.
 - `auth`: Authentication configuration (required)
   - `type`: `'basic'` or `'bearer'`
   - For basic: `clientId` and `clientSecret`
-  - For bearer: `bearerToken`, optional `refreshToken` and `autoRefresh`
+  - For bearer: `bearerToken`, optional `refreshToken`, `autoRefresh`, `lastRefreshedAt`, `tokenExpiryMs`, and `onTokenRefresh`
 - `rateLimitDelay`: Milliseconds between requests (default: 100)
 - `maxRetries`: Maximum retries for rate limiting (default: 3)
+- `autoPaginate`: Automatically fetch all pages for GET requests (default: true)
 
 ### People App
 

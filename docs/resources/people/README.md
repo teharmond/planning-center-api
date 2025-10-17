@@ -163,10 +163,6 @@ All resources return `ApiResponse<T>` objects with the following structure:
 ```typescript
 {
   data: T,              // The requested data
-  tokens?: {            // Optional refreshed tokens (if using OAuth)
-    accessToken: string,
-    refreshToken: string
-  },
   meta?: {              // Metadata about the response
     total_count?: number,
     count?: number,
@@ -183,6 +179,8 @@ All resources return `ApiResponse<T>` objects with the following structure:
   }
 }
 ```
+
+**Note:** When using OAuth with `autoRefresh: true`, token refreshes are handled automatically via the `onTokenRefresh` callback. See the main [README](../../../README.md#token-refresh) for details.
 
 ## Resources
 

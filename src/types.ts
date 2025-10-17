@@ -11,6 +11,7 @@ export interface BearerAuthConfig {
   autoRefresh?: boolean;
   lastRefreshedAt?: Date | string | number; // Optional: when token was last refreshed
   tokenExpiryMs?: number; // Optional: token lifetime in ms (default: 7200000 = 2 hours)
+  onTokenRefresh?: (tokens: RefreshedTokens) => void | Promise<void>; // Callback when tokens are refreshed
 }
 
 export type AuthConfig = BasicAuthConfig | BearerAuthConfig;
@@ -29,7 +30,6 @@ export interface RefreshedTokens {
 
 export interface ApiResponse<T = any> {
   data: T;
-  tokens?: RefreshedTokens;
   meta?: {
     total_count?: number;
     count?: number;
@@ -131,4 +131,26 @@ export interface Person {
   id: string;
   type: "Person";
   attributes: PersonAttributes;
+}
+
+export interface GroupAttributes {
+  archived_at?: string;
+  contact_email?: string;
+  created_at?: string;
+  description?: string;
+  enrollment_open?: boolean;
+  enrollment_strategy?: string;
+  events_visibility?: string;
+  location_type_preference?: string;
+  memberships_count?: number;
+  name?: string;
+  public_church_center_web_url?: string;
+  schedule?: string;
+  virtual_location_url?: string;
+}
+
+export interface Group {
+  id: string;
+  type: "Group";
+  attributes: GroupAttributes;
 }

@@ -20,7 +20,6 @@ export class PlanningCenter {
   private lastRequestTime = 0;
   private tokenRefreshedAt?: number;
   private tokenExpiryMs: number = 7200000; // 2 hours default
-  private wasTokenRefreshed = false;
 
   constructor(config: PlanningCenterConfig = {}) {
     this.config = {
@@ -131,9 +130,7 @@ export class PlanningCenter {
     path: string,
     body?: any,
     options?: { autoPaginate?: boolean }
-  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
-    this.wasTokenRefreshed = false;
-
+  ): Promise<{ data: T; meta?: any; links?: any }> {
     // Check if token needs proactive refresh
     if (this.shouldProactivelyRefresh()) {
       await this.refreshAccessToken();
@@ -156,7 +153,7 @@ export class PlanningCenter {
     method: string,
     path: string,
     body?: any
-  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
+  ): Promise<{ data: T; meta?: any; links?: any }> {
     await this.handleRateLimit();
 
     let retries = 0;
@@ -213,9 +210,6 @@ export class PlanningCenter {
         ) {
           return {
             data: undefined as T,
-            tokens: this.wasTokenRefreshed
-              ? this.getRefreshedTokens()
-              : undefined,
           };
         }
 
@@ -223,9 +217,6 @@ export class PlanningCenter {
 
         return {
           data: jsonResponse.data as T,
-          tokens: this.wasTokenRefreshed
-            ? this.getRefreshedTokens()
-            : undefined,
           meta: jsonResponse.meta,
           links: jsonResponse.links,
         };
@@ -243,7 +234,7 @@ export class PlanningCenter {
 
   private async requestWithPagination<T = any>(
     path: string
-  ): Promise<{ data: T; tokens?: RefreshedTokens; meta?: any; links?: any }> {
+  ): Promise<{ data: T; meta?: any; links?: any }> {
     const allData: any[] = [];
     let nextUrl: string | null = path;
     let lastMeta: any;
@@ -252,7 +243,6 @@ export class PlanningCenter {
     while (nextUrl) {
       const response: {
         data: any;
-        tokens?: RefreshedTokens;
         meta?: any;
         links?: any;
       } = await this.singleRequest<any>("GET", nextUrl);
@@ -279,7 +269,6 @@ export class PlanningCenter {
 
     return {
       data: allData as T,
-      tokens: this.wasTokenRefreshed ? this.getRefreshedTokens() : undefined,
       meta: lastMeta,
       links: lastLinks,
     };
@@ -374,21 +363,19 @@ export class PlanningCenter {
       };
 
       this.tokenRefreshedAt = Date.now();
-      this.wasTokenRefreshed = true;
+
+      // Call the onTokenRefresh callback if provided
+      if (this.auth.type === "bearer" && this.auth.onTokenRefresh) {
+        const tokens: RefreshedTokens = {
+          accessToken: this.currentTokens.access,
+          refreshToken: this.currentTokens.refresh!,
+        };
+        await this.auth.onTokenRefresh(tokens);
+      }
 
       return true;
     } catch {
       return false;
     }
-  }
-
-  private getRefreshedTokens(): RefreshedTokens | undefined {
-    if (this.auth.type === "bearer" && this.currentTokens) {
-      return {
-        accessToken: this.currentTokens.access,
-        refreshToken: this.currentTokens.refresh!,
-      };
-    }
-    return undefined;
   }
 }
