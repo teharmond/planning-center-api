@@ -129,11 +129,24 @@ export class PlanningCenter {
     method: string,
     path: string,
     body?: any,
-    options?: { autoPaginate?: boolean }
+    options?: { autoPaginate?: boolean; per_page?: number; offset?: number }
   ): Promise<{ data: T; meta?: any; links?: any }> {
     // Check if token needs proactive refresh
     if (this.shouldProactivelyRefresh()) {
       await this.refreshAccessToken();
+    }
+
+    // Add query parameters if provided
+    let finalPath = path;
+    if (options?.per_page || options?.offset !== undefined) {
+      const url = new URL(finalPath, this.baseUrl);
+      if (options.per_page) {
+        url.searchParams.set("per_page", options.per_page.toString());
+      }
+      if (options.offset !== undefined) {
+        url.searchParams.set("offset", options.offset.toString());
+      }
+      finalPath = url.pathname + url.search;
     }
 
     const autoPaginate =
@@ -143,10 +156,10 @@ export class PlanningCenter {
 
     // For GET requests with autoPaginate, collect all pages
     if (method === "GET" && autoPaginate) {
-      return this.requestWithPagination<T>(path);
+      return this.requestWithPagination<T>(finalPath);
     }
 
-    return this.singleRequest<T>(method, path, body);
+    return this.singleRequest<T>(method, finalPath, body);
   }
 
   private async singleRequest<T = any>(

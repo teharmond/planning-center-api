@@ -1,23 +1,31 @@
 import { PlanningCenter } from "../../client.js";
-import { Person, ApiResponse } from "../../types.js";
+import { Signup, ApiResponse } from "../../types.js";
 
-export interface PeopleListOptions {
-  per_page?: number; // default: 100, min: 1, max: 100
+export interface SignupsListOptions {
+  per_page?: number; // default: 25, min: 1, max: 100
   offset?: number;
   where?: Record<string, any>;
   order?: string;
   include?: string;
-  filter?: "created_since" | "admins" | "organization_admins" | string;
-  autoPaginate?: boolean; // Override the default autoPaginate setting
+  filter?:
+    | "between"
+    | "published"
+    | "unarchived"
+    | "future"
+    | "with_event_times"
+    | "active"
+    | "listed"
+    | "detailed"
+    | string;
 }
 
-export class PeopleListResource {
+export class SignupsListResource {
   constructor(private client: PlanningCenter) {}
 
-  async list(options?: PeopleListOptions): Promise<ApiResponse<Person[]>> {
+  async list(options?: SignupsListOptions): Promise<ApiResponse<Signup[]>> {
     const params = new URLSearchParams();
 
-    const perPage = options?.per_page ?? 100;
+    const perPage = options?.per_page ?? 25;
     if (perPage < 1 || perPage > 100) {
       throw new Error("per_page must be between 1 and 100");
     }
@@ -46,10 +54,8 @@ export class PeopleListResource {
     }
 
     const queryString = params.toString();
-    const path = `/people/v2/people${queryString ? `?${queryString}` : ""}`;
+    const path = `/registrations/v2/signups${queryString ? `?${queryString}` : ""}`;
 
-    return this.client.request<Person[]>("GET", path, undefined, {
-      autoPaginate: options?.autoPaginate,
-    });
+    return this.client.request<Signup[]>("GET", path);
   }
 }

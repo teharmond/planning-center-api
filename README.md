@@ -113,6 +113,7 @@ const pc = new PlanningCenter({
   },
   rateLimitDelay: 100, // ms between requests (default: 100)
   maxRetries: 3, // max retries for rate limits (default: 3)
+  autoPaginate: true, // automatically fetch all pages (default: true)
 });
 ```
 
@@ -165,6 +166,66 @@ const pc = new PlanningCenter({
 // Now you can use the client throughout your app
 // and it will automatically handle token refresh
 const { data } = await pc.people.person("123").get();
+```
+
+## Pagination Control
+
+By default, the client automatically fetches all pages for list requests (`autoPaginate: true`). You can control this behavior globally or per-request:
+
+### Global Setting
+
+```typescript
+const pc = new PlanningCenter({
+  auth: { /* ... */ },
+  autoPaginate: false, // Disable auto-pagination globally
+});
+```
+
+### Per-Request Control
+
+```typescript
+// Get only the first 25 people (no auto-pagination)
+const { data } = await pc.people.list({
+  per_page: 25,
+  autoPaginate: false,
+});
+
+// Get exactly 50 people starting at offset 100
+const { data } = await pc.people.list({
+  per_page: 50,
+  offset: 100,
+  autoPaginate: false,
+});
+
+// Auto-paginate with custom page size (fetches all pages, 100 at a time)
+const { data } = await pc.people.list({
+  per_page: 100,
+  autoPaginate: true,
+});
+```
+
+### Manual Pagination
+
+You can also manually paginate through results:
+
+```typescript
+let offset = 0;
+const perPage = 25;
+let hasMore = true;
+
+while (hasMore) {
+  const response = await pc.people.list({
+    per_page: perPage,
+    offset: offset,
+    autoPaginate: false,
+  });
+
+  console.log(`Fetched ${response.data.length} people`);
+
+  // Check if there's a next page
+  hasMore = !!response.links?.next;
+  offset += perPage;
+}
 ```
 
 ## API Reference

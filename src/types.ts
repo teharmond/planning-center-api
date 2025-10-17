@@ -201,3 +201,116 @@ export interface GroupType {
   type: "GroupType";
   attributes: GroupTypeAttributes;
 }
+
+export interface EpisodeAttributes {
+  title?: string;
+  description?: string;
+  published_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  image_url?: string;
+  duration?: number;
+  video_url?: string;
+  audio_url?: string;
+  church_center_published?: boolean;
+}
+
+export interface Episode {
+  id: string;
+  type: "Episode";
+  attributes: EpisodeAttributes;
+}
+
+export interface SeriesAttributes {
+  title?: string;
+  description?: string;
+  image_url?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Series {
+  id: string;
+  type: "Series";
+  attributes: SeriesAttributes;
+}
+
+export interface SignupAttributes {
+  name?: string;
+  description?: string;
+  image_url?: string;
+  starts_at?: string;
+  ends_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  archived_at?: string;
+  published_at?: string;
+  listed?: boolean;
+  active?: boolean;
+}
+
+export interface Signup {
+  id: string;
+  type: "Signup";
+  attributes: SignupAttributes;
+}
+
+export interface CategoryAttributes {
+  name?: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Category {
+  id: string;
+  type: "Category";
+  attributes: CategoryAttributes;
+}
+
+export interface RegistrationsCampusAttributes {
+  name?: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface RegistrationsCampus {
+  id: string;
+  type: "Campus";
+  attributes: RegistrationsCampusAttributes;
+}
+
+export interface EventAttributes {
+  name?: string;
+  description?: string;
+  approval_status?: string;
+  created_at?: string;
+  updated_at?: string;
+  percent_approved?: number;
+  percent_rejected?: number;
+  visible_in_church_center?: boolean;
+  image_url?: string;
+  starts_at?: string;
+  ends_at?: string;
+}
+
+export interface Event {
+  id: string;
+  type: "Event";
+  attributes: EventAttributes;
+}
+
+export interface CalendarTagAttributes {
+  name?: string;
+  color?: string;
+  created_at?: string;
+  updated_at?: string;
+  position?: number;
+}
+
+export interface CalendarTag {
+  id: string;
+  type: "Tag";
+  attributes: CalendarTagAttributes;
+}

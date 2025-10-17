@@ -13,6 +13,7 @@ export interface GroupsListOptions {
     group_type?: number[];
     campus?: number[];
   };
+  autoPaginate?: boolean; // Override the default autoPaginate setting
 }
 
 export class GroupsListResource {
@@ -61,6 +62,8 @@ export class GroupsListResource {
     const queryString = params.toString();
     const path = `/groups/v2/groups${queryString ? `?${queryString}` : ""}`;
 
-    return this.client.request<Group[]>("GET", path);
+    return this.client.request<Group[]>("GET", path, undefined, {
+      autoPaginate: options?.autoPaginate,
+    });
   }
 }
