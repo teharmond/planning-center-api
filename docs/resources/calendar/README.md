@@ -5,6 +5,7 @@ Documentation for Planning Center Calendar API resources.
 ## Available Resources
 
 - [Events List](./events-list.md) - List and filter calendar events
+- [Event Instances List](./event-instances-list.md) - List and filter calendar event instances
 - [Tags List](./tags-list.md) - List calendar tags
 
 ## Common Use Cases
@@ -39,6 +40,23 @@ const events = await client.calendar.listEvents({
 
 // List tags
 const tags = await client.calendar.listTags();
+
+// List event instances
+const eventInstances = await client.calendar.listEventInstances();
+
+// List future event instances
+const eventInstances = await client.calendar.listEventInstances({
+  filter: 'future',
+  order: 'starts_at'
+});
+
+// Query event instances by event name
+const eventInstances = await client.calendar.listEventInstances({
+  where: {
+    event_name: 'Sunday Service'
+  },
+  include: 'event,tags'
+});
 ```
 
 ## Base URL

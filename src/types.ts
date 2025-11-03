@@ -316,3 +316,20 @@ export interface CalendarTag {
   type: "Tag";
   attributes: CalendarTagAttributes;
 }
+
+export interface EventInstanceAttributes {
+  starts_at?: string;
+  ends_at?: string;
+  all_day?: boolean;
+  location?: string;
+  notes?: string;
+  approval_status?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface EventInstance {
+  id: string;
+  type: "EventInstance";
+  attributes: EventInstanceAttributes;
+}
