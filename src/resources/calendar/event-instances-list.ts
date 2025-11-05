@@ -52,16 +52,16 @@ export class EventInstancesListResource {
   constructor(private client: PlanningCenter) {}
 
   async list(options?: EventInstancesListOptions): Promise<ApiResponse<EventInstance[]>> {
-    const params = new URLSearchParams();
+    const queryParts: string[] = [];
 
     const perPage = options?.per_page ?? 25;
     if (perPage < 1 || perPage > 100) {
       throw new Error("per_page must be between 1 and 100");
     }
-    params.append("per_page", perPage.toString());
+    queryParts.push(`per_page=${perPage}`);
 
     if (options?.offset !== undefined) {
-      params.append("offset", options.offset.toString());
+      queryParts.push(`offset=${options.offset}`);
     }
 
     if (options?.where) {
@@ -69,27 +69,27 @@ export class EventInstancesListResource {
         if (typeof value === 'object' && value !== null) {
           // Handle comparison operators (gt, lt, gte, lte)
           Object.entries(value).forEach(([operator, operatorValue]) => {
-            params.append(`where[${key}][${operator}]`, String(operatorValue));
+            queryParts.push(`where[${key}][${operator}]=${encodeURIComponent(String(operatorValue))}`);
           });
         } else {
-          params.append(`where[${key}]`, String(value));
+          queryParts.push(`where[${key}]=${encodeURIComponent(String(value))}`);
         }
       });
     }
 
     if (options?.order) {
-      params.append("order", options.order);
+      queryParts.push(`order=${options.order}`);
     }
 
     if (options?.include) {
-      params.append("include", options.include);
+      queryParts.push(`include=${options.include}`);
     }
 
     if (options?.filter) {
-      params.append("filter", options.filter);
+      queryParts.push(`filter=${options.filter}`);
     }
 
-    const queryString = params.toString();
+    const queryString = queryParts.join('&');
     const path = `/calendar/v2/event_instances${queryString ? `?${queryString}` : ""}`;
 
     return this.client.request<EventInstance[]>("GET", path);
