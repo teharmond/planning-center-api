@@ -1,16 +1,18 @@
 import { PlanningCenter } from "../../client.js";
 import { EventInstance, ApiResponse } from "../../types.js";
 
+type ComparisonValue = string | { gt?: string; lt?: string; gte?: string; lte?: string };
+
 export interface EventInstancesListOptions {
   per_page?: number; // default: 25, min: 1, max: 100
   offset?: number;
   where?: {
-    created_at?: string;
-    ends_at?: string;
+    created_at?: ComparisonValue;
+    ends_at?: ComparisonValue;
     event_name?: string;
-    starts_at?: string;
+    starts_at?: ComparisonValue;
     tag_ids?: string;
-    updated_at?: string;
+    updated_at?: ComparisonValue;
   };
   order?: string;
   include?: string;
@@ -64,7 +66,14 @@ export class EventInstancesListResource {
 
     if (options?.where) {
       Object.entries(options.where).forEach(([key, value]) => {
-        params.append(`where[${key}]`, String(value));
+        if (typeof value === 'object' && value !== null) {
+          // Handle comparison operators (gt, lt, gte, lte)
+          Object.entries(value).forEach(([operator, operatorValue]) => {
+            params.append(`where[${key}][${operator}]`, String(operatorValue));
+          });
+        } else {
+          params.append(`where[${key}]`, String(value));
+        }
       });
     }
 
