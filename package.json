@@ -1,6 +1,6 @@
 {
   "name": "planning-center-api",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "A TypeScript toolkit for building applications on top of the Planning Center API.",
   "license": "MIT",
   "author": "Thomas Harmond <hey@thomasharmond.com>",

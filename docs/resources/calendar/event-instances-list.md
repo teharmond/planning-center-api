@@ -21,12 +21,19 @@ List all event instances with optional filtering, querying, ordering, and pagina
 - `options.per_page` (optional): Number of records per page (default: 25, min: 1, max: 100)
 - `options.offset` (optional): Number of records to skip for pagination
 - `options.where` (optional): Object with key-value pairs for querying (can_query_by):
-  - `created_at` - Query by creation date
-  - `ends_at` - Query by end date/time
-  - `event_name` - Query by event name
-  - `starts_at` - Query by start date/time
+  - `created_at` - Query by creation date (supports comparison operators)
+  - `ends_at` - Query by end date/time (supports comparison operators)
+  - `event_name` - Query by event name (exact match)
+  - `starts_at` - Query by start date/time (supports comparison operators)
   - `tag_ids` - Query by tag IDs
-  - `updated_at` - Query by update date
+  - `updated_at` - Query by update date (supports comparison operators)
+
+  **Comparison Operators:**
+  For date fields (`created_at`, `ends_at`, `starts_at`, `updated_at`), you can use comparison operators:
+  - `gt` - Greater than
+  - `lt` - Less than
+  - `gte` - Greater than or equal to
+  - `lte` - Less than or equal to
 - `options.order` (optional): Sort order (can_order_by):
   - `created_at`, `updated_at`, `starts_at`, `ends_at`
   - Prefix with `-` for descending order (e.g., `'-starts_at'`)
@@ -86,11 +93,21 @@ const response = await client.calendar.listEventInstances({
   }
 });
 
-// Query by date range
+// Query by date range using comparison operators
 const response = await client.calendar.listEventInstances({
   where: {
-    starts_at: '2025-01-01',
-    ends_at: '2025-12-31'
+    starts_at: {
+      gt: '2025-02-01',
+      lt: '2025-03-01'
+    }
+  }
+});
+
+// Query by date range (alternative method)
+const response = await client.calendar.listEventInstances({
+  where: {
+    starts_at: { gte: '2025-01-01' },
+    ends_at: { lte: '2025-12-31' }
   }
 });
 
@@ -182,8 +199,11 @@ GET /calendar/v2/event_instances?filter=future
 # Query by event name
 GET /calendar/v2/event_instances?where[event_name]=Sunday%20Service
 
-# Query by date range
-GET /calendar/v2/event_instances?where[starts_at]=2025-01-01&where[ends_at]=2025-12-31
+# Query by date range using comparison operators
+GET /calendar/v2/event_instances?where[starts_at][gt]=2025-02-01&where[starts_at][lt]=2025-03-01
+
+# Query by date range (alternative method)
+GET /calendar/v2/event_instances?where[starts_at][gte]=2025-01-01&where[ends_at][lte]=2025-12-31
 
 # Query by tag IDs
 GET /calendar/v2/event_instances?where[tag_ids]=12345,67890
