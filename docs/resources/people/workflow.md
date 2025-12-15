@@ -129,6 +129,44 @@ const response = await client.people.workflow('123').listSteps();
 console.log(response.data);
 ```
 
+### `step(stepId?)`
+
+Access the workflow step resource for full CRUD operations.
+
+**Parameters:**
+- `stepId` (optional): The ID of a specific step
+
+**Returns:** `WorkflowStepResource`
+
+**Example:**
+```typescript
+// List steps with options
+const steps = await client.people.workflow('123').step().list({
+  order: 'sequence',
+  include: ['default_assignee']
+});
+
+// Get a specific step
+const step = await client.people.workflow('123').step('456').get();
+
+// Create a new step
+const newStep = await client.people.workflow('123').step().create({
+  name: 'Follow Up',
+  sequence: 2,
+  description: 'Follow up with the new member'
+});
+
+// Update a step
+await client.people.workflow('123').step('456').update({
+  name: 'Updated Step Name'
+});
+
+// Delete a step
+await client.people.workflow('123').step('456').delete();
+```
+
+See [Workflow Step](./workflow-step.md) for full documentation.
+
 ### `listSharedPeople()`
 
 List all people who have access to this workflow.
@@ -197,5 +235,9 @@ const response = await client.people.workflow('123').createShare({
 - `POST /people/v2/workflows/{id}/cards`
 - `GET /people/v2/workflows/{id}/category`
 - `GET /people/v2/workflows/{id}/steps`
+- `GET /people/v2/workflows/{id}/steps/{step_id}`
+- `POST /people/v2/workflows/{id}/steps`
+- `PATCH /people/v2/workflows/{id}/steps/{step_id}`
+- `DELETE /people/v2/workflows/{id}/steps/{step_id}`
 - `GET /people/v2/workflows/{id}/shared_people`
 - `POST /people/v2/workflows/{id}/shares`

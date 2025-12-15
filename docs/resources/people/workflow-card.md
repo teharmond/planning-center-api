@@ -206,11 +206,43 @@ List all notes for a workflow card.
 **Parameters:**
 - `workflowCardId`: The ID of the workflow card
 
-**Returns:** Array of notes
+**Returns:** Array of workflow card notes
 
 **Example:**
 ```typescript
 const response = await client.people.person('123').workflowCards().listNotes('456');
+console.log(response.data);
+```
+
+### `getNote(workflowCardId, noteId)`
+
+Get a specific note for a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `noteId`: The ID of the note
+
+**Returns:** Workflow card note object
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().getNote('456', '789');
+console.log(response.data.attributes.note);
+```
+
+### `createNote(workflowCardId, attributes)`
+
+Create a new note on a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `attributes.note` (required): The note content
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().createNote('456', {
+  note: 'Called and left voicemail. Will follow up next week.'
+});
 console.log(response.data);
 ```
 
@@ -343,6 +375,8 @@ console.log(response.data.attributes.last_name);
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/assignee`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/current_step`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/notes`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/notes/{note_id}`
+- `POST /people/v2/people/{person_id}/workflow_cards/{id}/notes`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/person`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/workflow`
 - `POST /people/v2/workflows/{workflow_id}/cards` (via workflow resource)

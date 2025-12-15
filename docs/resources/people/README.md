@@ -81,6 +81,33 @@ const cards = await client.people.workflow('123').listCards();
 const steps = await client.people.workflow('123').listSteps();
 ```
 
+### [Workflow Step](./workflow-step.md)
+Manage workflow steps with full CRUD operations.
+
+```typescript
+// List steps for a workflow
+const steps = await client.people.workflow('123').step().list();
+
+// Get a specific step
+const step = await client.people.workflow('123').step('456').get();
+
+// Create a step
+const newStep = await client.people.workflow('123').step().create({
+  name: 'Initial Contact',
+  sequence: 1,
+  description: 'First outreach to new member'
+});
+
+// Update a step
+await client.people.workflow('123').step('456').update({ name: 'Updated Name' });
+
+// Delete a step
+await client.people.workflow('123').step('456').delete();
+
+// Get default assignee
+const assignee = await client.people.workflow('123').step('456').getDefaultAssignee();
+```
+
 ### [Workflow Card](./workflow-card.md)
 Manage workflow cards (instances) for a person.
 
@@ -187,5 +214,6 @@ All resources return `ApiResponse<T>` objects with the following structure:
 - [Person](./person.md) - Individual people management
 - [People List](./people-list.md) - List and filter people
 - [Workflow](./workflow.md) - Workflow management
+- [Workflow Step](./workflow-step.md) - Workflow step management
 - [Workflow Card](./workflow-card.md) - Workflow card instances
 - [Workflow Share](./workflow-share.md) - Workflow sharing permissions

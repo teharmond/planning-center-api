@@ -2,6 +2,7 @@ import { PlanningCenter } from "../../client.js";
 import { ApiResponse, Person } from "../../types.js";
 import { WorkflowShare } from "./workflow-share.js";
 import { WorkflowCard } from "./workflow-card.js";
+import { WorkflowStepResource, WorkflowStep } from "./workflow-step.js";
 
 export interface Workflow {
   type: "Workflow";
@@ -50,20 +51,6 @@ export interface WorkflowCategory {
   id: string;
   attributes: {
     name?: string;
-    created_at?: string;
-    updated_at?: string;
-  };
-}
-
-export interface WorkflowStep {
-  type: "WorkflowStep";
-  id: string;
-  attributes: {
-    name?: string;
-    sequence?: number;
-    description?: string;
-    expected_response_time_in_days?: number | null;
-    default_assignee_id?: string | null;
     created_at?: string;
     updated_at?: string;
   };
@@ -190,6 +177,14 @@ export class WorkflowResource {
       "GET",
       `/people/v2/workflows/${this.workflowId}/steps`
     );
+  }
+
+  step(stepId?: string): WorkflowStepResource {
+    if (!this.workflowId) {
+      throw new Error("Workflow ID is required for accessing steps");
+    }
+
+    return new WorkflowStepResource(this.client, this.workflowId, stepId);
   }
 
   async listSharedPeople(): Promise<ApiResponse<Person[]>> {

@@ -60,13 +60,19 @@ export interface WorkflowStep {
 }
 
 export interface WorkflowCardNote {
-  type: "Note";
+  type: "WorkflowCardNote";
   id: string;
   attributes: {
     note?: string;
     created_at?: string;
-    updated_at?: string;
   };
+  relationships?: {
+    note_category?: { data: { type: string; id: string } | null };
+  };
+}
+
+export interface WorkflowCardNoteCreateAttributes {
+  note: string;
 }
 
 export interface Workflow {
@@ -230,6 +236,34 @@ export class WorkflowCardResource {
     return this.client.request<WorkflowCardNote[]>(
       "GET",
       `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/notes`
+    );
+  }
+
+  async getNote(
+    workflowCardId: string,
+    noteId: string
+  ): Promise<ApiResponse<WorkflowCardNote>> {
+    return this.client.request<WorkflowCardNote>(
+      "GET",
+      `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/notes/${noteId}`
+    );
+  }
+
+  async createNote(
+    workflowCardId: string,
+    attributes: WorkflowCardNoteCreateAttributes
+  ): Promise<ApiResponse<WorkflowCardNote>> {
+    const body = {
+      data: {
+        type: "WorkflowCardNote",
+        attributes,
+      },
+    };
+
+    return this.client.request<WorkflowCardNote>(
+      "POST",
+      `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/notes`,
+      body
     );
   }
 
