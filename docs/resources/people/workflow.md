@@ -13,14 +13,62 @@ const workflow = client.people.workflow(workflowId);
 
 ## Methods
 
-### `list()`
+### `list(options?)`
 
-List all workflows.
+List all workflows with optional filtering and pagination.
+
+**Parameters:**
+- `options.per_page` (optional): Number of records per page (default: 25, min: 1, max: 100)
+- `options.offset` (optional): Number of records to skip for pagination
+- `options.where` (optional): Object with key-value pairs for filtering (see Where Options below)
+- `options.order` (optional): Sort order (e.g., `'name'`, `'-created_at'`)
+- `options.include` (optional): Comma-separated string of related resources to include
+
+**Where Options:**
+- `name` - Filter by workflow name
+- `workflow_category_id` - Filter by workflow category ID
+- `campus_id` - Filter by campus ID
+- `id` - Filter by workflow ID
+- `archived_at` - Filter by archived date
+- `deleted_at` - Filter by deleted date
+- `created_at` - Filter by creation date
+- `updated_at` - Filter by update date
 
 **Example:**
 ```typescript
+// Basic list
 const response = await client.people.workflow().list();
 console.log(response.data);
+
+// Filter by name
+const response = await client.people.workflow().list({
+  where: {
+    name: 'New Member Onboarding'
+  }
+});
+
+// Filter by category
+const response = await client.people.workflow().list({
+  where: {
+    workflow_category_id: '456'
+  }
+});
+
+// With pagination and sorting
+const response = await client.people.workflow().list({
+  per_page: 50,
+  offset: 0,
+  order: 'name'
+});
+
+// Combined filters
+const response = await client.people.workflow().list({
+  where: {
+    workflow_category_id: '456',
+    campus_id: '789'
+  },
+  order: '-created_at'
+});
 ```
 
 ### `get()`

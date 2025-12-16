@@ -56,14 +56,77 @@ export interface WorkflowCategory {
   };
 }
 
+export interface WorkflowListWhereOptions {
+  /** Query on a specific archived_at */
+  archived_at?: string;
+  /** Query on a specific campus_id */
+  campus_id?: string;
+  /** Query on a specific created_at */
+  created_at?: string;
+  /** Query on a specific deleted_at */
+  deleted_at?: string;
+  /** Query on a specific id */
+  id?: string;
+  /** Query on a specific name */
+  name?: string;
+  /** Query on a specific updated_at */
+  updated_at?: string;
+  /** Query on a specific workflow_category_id */
+  workflow_category_id?: string;
+  /** Allow additional where parameters */
+  [key: string]: string | undefined;
+}
+
+export interface WorkflowListOptions {
+  /** Number of records per page (default: 25, min: 1, max: 100) */
+  per_page?: number;
+  /** Number of records to skip for pagination */
+  offset?: number;
+  /** Filter conditions */
+  where?: WorkflowListWhereOptions;
+  /** Sort order (e.g., 'name', '-created_at') */
+  order?: string;
+  /** Comma-separated string of related resources to include */
+  include?: string;
+}
+
 export class WorkflowResource {
   constructor(
     private client: PlanningCenter,
     private workflowId?: string
   ) {}
 
-  async list(): Promise<ApiResponse<Workflow[]>> {
-    return this.client.request<Workflow[]>("GET", "/people/v2/workflows");
+  async list(options?: WorkflowListOptions): Promise<ApiResponse<Workflow[]>> {
+    const params = new URLSearchParams();
+
+    if (options?.per_page !== undefined) {
+      params.append("per_page", options.per_page.toString());
+    }
+
+    if (options?.offset !== undefined) {
+      params.append("offset", options.offset.toString());
+    }
+
+    if (options?.where) {
+      Object.entries(options.where).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.append(`where[${key}]`, value);
+        }
+      });
+    }
+
+    if (options?.order) {
+      params.append("order", options.order);
+    }
+
+    if (options?.include) {
+      params.append("include", options.include);
+    }
+
+    const queryString = params.toString();
+    const path = `/people/v2/workflows${queryString ? `?${queryString}` : ""}`;
+
+    return this.client.request<Workflow[]>("GET", path);
   }
 
   async get(): Promise<ApiResponse<Workflow>> {
