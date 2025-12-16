@@ -13,14 +13,52 @@ const workflowCards = client.people.person('123').workflowCards();
 
 ## Methods
 
-### `list()`
+### `list(options?)`
 
-List all workflow cards for a person.
+List all workflow cards for a person with optional filtering and pagination.
+
+**Parameters:**
+- `options.per_page` (optional): Number of records per page (default: 25, min: 1, max: 100)
+- `options.offset` (optional): Number of records to skip for pagination
+- `options.where` (optional): Object with key-value pairs for filtering (see Where Options below)
+- `options.order` (optional): Sort order (e.g., `'created_at'`, `'-updated_at'`, `'stage'`)
+- `options.include` (optional): Comma-separated string of related resources to include
+
+**Where Options:**
+- `created_at` - Filter by creation date
+- `updated_at` - Filter by update date
+- `stage` - Filter by stage
 
 **Example:**
 ```typescript
+// Basic list
 const response = await client.people.person('123').workflowCards().list();
 console.log(response.data);
+
+// With pagination
+const response = await client.people.person('123').workflowCards().list({
+  per_page: 50,
+  offset: 0
+});
+
+// With sorting
+const response = await client.people.person('123').workflowCards().list({
+  order: '-created_at'
+});
+
+// With filtering
+const response = await client.people.person('123').workflowCards().list({
+  where: {
+    stage: 'In Progress'
+  }
+});
+
+// Combined options
+const response = await client.people.person('123').workflowCards().list({
+  per_page: 25,
+  order: '-updated_at',
+  include: 'assignee,workflow'
+});
 ```
 
 ### `get(workflowCardId)`

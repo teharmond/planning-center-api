@@ -88,6 +88,30 @@ export interface WorkflowCardNoteCreateAttributes {
   note: string;
 }
 
+export interface WorkflowCardListWhereOptions {
+  /** Query on a specific created_at */
+  created_at?: string;
+  /** Query on a specific updated_at */
+  updated_at?: string;
+  /** Query on a specific stage */
+  stage?: string;
+  /** Allow additional where parameters */
+  [key: string]: string | undefined;
+}
+
+export interface WorkflowCardListOptions {
+  /** Number of records per page (default: 25, min: 1, max: 100) */
+  per_page?: number;
+  /** Number of records to skip for pagination */
+  offset?: number;
+  /** Filter conditions */
+  where?: WorkflowCardListWhereOptions;
+  /** Sort order (e.g., 'created_at', '-updated_at', 'stage') */
+  order?: string;
+  /** Comma-separated string of related resources to include */
+  include?: string;
+}
+
 export interface Workflow {
   type: "Workflow";
   id: string;
@@ -103,11 +127,37 @@ export class WorkflowCardResource {
     private personId: string
   ) {}
 
-  async list(): Promise<ApiResponse<WorkflowCard[]>> {
-    return this.client.request<WorkflowCard[]>(
-      "GET",
-      `/people/v2/people/${this.personId}/workflow_cards`
-    );
+  async list(options?: WorkflowCardListOptions): Promise<ApiResponse<WorkflowCard[]>> {
+    const params = new URLSearchParams();
+
+    if (options?.per_page !== undefined) {
+      params.append("per_page", options.per_page.toString());
+    }
+
+    if (options?.offset !== undefined) {
+      params.append("offset", options.offset.toString());
+    }
+
+    if (options?.where) {
+      Object.entries(options.where).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.append(`where[${key}]`, value);
+        }
+      });
+    }
+
+    if (options?.order) {
+      params.append("order", options.order);
+    }
+
+    if (options?.include) {
+      params.append("include", options.include);
+    }
+
+    const queryString = params.toString();
+    const path = `/people/v2/people/${this.personId}/workflow_cards${queryString ? `?${queryString}` : ""}`;
+
+    return this.client.request<WorkflowCard[]>("GET", path);
   }
 
   async get(workflowCardId: string): Promise<ApiResponse<WorkflowCard>> {
