@@ -39,9 +39,22 @@ export interface WorkflowCardActivity {
   type: "WorkflowCardActivity";
   id: string;
   attributes: {
+    comment?: string;
     content?: string;
+    form_submission_url?: string;
+    automation_url?: string;
+    person_avatar_url?: string;
+    person_name?: string;
+    reassigned_to_avatar_url?: string;
+    reassigned_to_name?: string;
+    subject?: string;
     type?: string;
+    content_is_html?: boolean;
     created_at?: string;
+  };
+  relationships?: {
+    workflow_card?: { data: { type: string; id: string } };
+    workflow_step?: { data: { type: string; id: string } | null };
   };
 }
 
@@ -218,6 +231,26 @@ export class WorkflowCardResource {
     return this.client.request<WorkflowCardActivity[]>(
       "GET",
       `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/activities`
+    );
+  }
+
+  async getActivity(
+    workflowCardId: string,
+    activityId: string
+  ): Promise<ApiResponse<WorkflowCardActivity>> {
+    return this.client.request<WorkflowCardActivity>(
+      "GET",
+      `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/activities/${activityId}`
+    );
+  }
+
+  async deleteActivity(
+    workflowCardId: string,
+    activityId: string
+  ): Promise<ApiResponse<void>> {
+    return this.client.request<void>(
+      "DELETE",
+      `/people/v2/people/${this.personId}/workflow_cards/${workflowCardId}/activities/${activityId}`
     );
   }
 

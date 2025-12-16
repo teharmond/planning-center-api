@@ -184,6 +184,35 @@ const response = await client.people.person('123').workflowCards().listActivitie
 console.log(response.data);
 ```
 
+### `getActivity(workflowCardId, activityId)`
+
+Get a specific activity for a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `activityId`: The ID of the activity
+
+**Returns:** Workflow card activity object
+
+**Example:**
+```typescript
+const response = await client.people.person('123').workflowCards().getActivity('456', '789');
+console.log(response.data.attributes.content);
+```
+
+### `deleteActivity(workflowCardId, activityId)`
+
+Delete a specific activity from a workflow card.
+
+**Parameters:**
+- `workflowCardId`: The ID of the workflow card
+- `activityId`: The ID of the activity
+
+**Example:**
+```typescript
+await client.people.person('123').workflowCards().deleteActivity('456', '789');
+```
+
 ### `getCurrentStep(workflowCardId)`
 
 Get the current step of a workflow card.
@@ -338,6 +367,35 @@ const response = await client.people.workflow('789').createCard({
 }
 ```
 
+## Workflow Card Activity Object
+
+```typescript
+{
+  type: "WorkflowCardActivity",
+  id: "789",
+  attributes: {
+    comment: "Left a voicemail",
+    content: "Called John about follow-up",
+    form_submission_url: null,
+    automation_url: null,
+    person_avatar_url: "https://example.com/avatar.jpg",
+    person_name: "Jane Smith",
+    reassigned_to_avatar_url: null,
+    reassigned_to_name: null,
+    subject: "Follow-up call",
+    type: "note",
+    content_is_html: false,
+    created_at: "2024-01-18T14:30:00Z"
+  },
+  relationships: {
+    workflow_card: { data: { type: "WorkflowCard", id: "456" } },
+    workflow_step: { data: { type: "WorkflowStep", id: "202" } }
+  }
+}
+```
+
+**Note:** The `workflow_step` relationship is only available when the activity `type` is `completion`, `skip`, or `reversal`.
+
 ## Assignee Resource
 
 The assignee resource allows you to get information about who is assigned to a workflow card.
@@ -372,6 +430,8 @@ console.log(response.data.attributes.last_name);
 - `POST /people/v2/people/{person_id}/workflow_cards/{id}/snooze`
 - `POST /people/v2/people/{person_id}/workflow_cards/{id}/unsnooze`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/activities`
+- `GET /people/v2/people/{person_id}/workflow_cards/{id}/activities/{activity_id}`
+- `DELETE /people/v2/people/{person_id}/workflow_cards/{id}/activities/{activity_id}`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/assignee`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/current_step`
 - `GET /people/v2/people/{person_id}/workflow_cards/{id}/notes`
