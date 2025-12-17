@@ -176,6 +176,30 @@ const pc = new PlanningCenter({
 const { data } = await pc.people.person("123").get();
 ```
 
+## Including Related Resources
+
+When fetching data, you can include related resources using the `include` option. The included resources are returned in the `included` array of the response:
+
+```typescript
+// Fetch workflow cards with related resources
+const response = await pc.people.workflow('123').listCards({
+  include: 'assignee,current_step,person,workflow'
+});
+
+// Access the main data
+console.log(response.data); // Array of workflow cards
+
+// Access included resources
+console.log(response.included); // Array of related Person, WorkflowStep, Workflow objects
+
+// Find a specific included resource
+const assignee = response.included?.find(
+  item => item.type === 'Person' && item.id === '456'
+);
+```
+
+The `included` array contains all related resources requested via the `include` parameter. Each resource has `type`, `id`, `attributes`, and optionally `relationships` and `links`.
+
 ## Pagination Control
 
 By default, the client automatically fetches all pages for list requests (`autoPaginate: true`). You can control this behavior globally or per-request:

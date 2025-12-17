@@ -32,6 +32,13 @@ export interface RefreshedTokens {
 
 export interface ApiResponse<T = any> {
   data: T;
+  included?: Array<{
+    type: string;
+    id: string;
+    attributes: Record<string, any>;
+    relationships?: Record<string, any>;
+    links?: Record<string, any>;
+  }>;
   meta?: {
     total_count?: number;
     count?: number;

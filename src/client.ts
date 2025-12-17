@@ -130,7 +130,7 @@ export class PlanningCenter {
     path: string,
     body?: any,
     options?: { autoPaginate?: boolean; per_page?: number; offset?: number }
-  ): Promise<{ data: T; meta?: any; links?: any }> {
+  ): Promise<{ data: T; included?: any[]; meta?: any; links?: any }> {
     // Check if token needs proactive refresh
     if (this.shouldProactivelyRefresh()) {
       await this.refreshAccessToken();
@@ -166,7 +166,7 @@ export class PlanningCenter {
     method: string,
     path: string,
     body?: any
-  ): Promise<{ data: T; meta?: any; links?: any }> {
+  ): Promise<{ data: T; included?: any[]; meta?: any; links?: any }> {
     await this.handleRateLimit();
 
     let retries = 0;
@@ -230,6 +230,7 @@ export class PlanningCenter {
 
         return {
           data: jsonResponse.data as T,
+          included: jsonResponse.included,
           meta: jsonResponse.meta,
           links: jsonResponse.links,
         };
@@ -247,8 +248,10 @@ export class PlanningCenter {
 
   private async requestWithPagination<T = any>(
     path: string
-  ): Promise<{ data: T; meta?: any; links?: any }> {
+  ): Promise<{ data: T; included?: any[]; meta?: any; links?: any }> {
     const allData: any[] = [];
+    const allIncluded: any[] = [];
+    const includedIds = new Set<string>();
     let nextUrl: string | null = path;
     let lastMeta: any;
     let lastLinks: any;
@@ -256,6 +259,7 @@ export class PlanningCenter {
     while (nextUrl) {
       const response: {
         data: any;
+        included?: any[];
         meta?: any;
         links?: any;
       } = await this.singleRequest<any>("GET", nextUrl);
@@ -265,6 +269,17 @@ export class PlanningCenter {
       } else {
         // Single item response, return as-is
         return response as any;
+      }
+
+      // Merge included resources, avoiding duplicates
+      if (response.included) {
+        for (const item of response.included) {
+          const key = `${item.type}:${item.id}`;
+          if (!includedIds.has(key)) {
+            includedIds.add(key);
+            allIncluded.push(item);
+          }
+        }
       }
 
       lastMeta = response.meta;
@@ -282,6 +297,7 @@ export class PlanningCenter {
 
     return {
       data: allData as T,
+      included: allIncluded.length > 0 ? allIncluded : undefined,
       meta: lastMeta,
       links: lastLinks,
     };
