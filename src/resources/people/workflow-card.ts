@@ -89,12 +89,16 @@ export interface WorkflowCardNoteCreateAttributes {
 }
 
 export interface WorkflowCardListWhereOptions {
+  /** Query on a related assignee */
+  assignee_id?: string;
+  /** Query on a specific overdue status */
+  overdue?: string;
+  /** Query on a specific stage */
+  stage?: string;
   /** Query on a specific created_at */
   created_at?: string;
   /** Query on a specific updated_at */
   updated_at?: string;
-  /** Query on a specific stage */
-  stage?: string;
   /** Allow additional where parameters */
   [key: string]: string | undefined;
 }

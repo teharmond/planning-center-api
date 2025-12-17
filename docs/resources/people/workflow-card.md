@@ -25,9 +25,11 @@ List all workflow cards for a person with optional filtering and pagination.
 - `options.include` (optional): Comma-separated string of related resources to include
 
 **Where Options:**
+- `assignee_id` - Filter by assignee ID
+- `overdue` - Filter by overdue status (`'true'` or `'false'`)
+- `stage` - Filter by stage
 - `created_at` - Filter by creation date
 - `updated_at` - Filter by update date
-- `stage` - Filter by stage
 
 **Example:**
 ```typescript
@@ -46,10 +48,24 @@ const response = await client.people.person('123').workflowCards().list({
   order: '-created_at'
 });
 
-// With filtering
+// Filter by stage
 const response = await client.people.person('123').workflowCards().list({
   where: {
     stage: 'In Progress'
+  }
+});
+
+// Filter by overdue
+const response = await client.people.person('123').workflowCards().list({
+  where: {
+    overdue: 'true'
+  }
+});
+
+// Filter by assignee
+const response = await client.people.person('123').workflowCards().list({
+  where: {
+    assignee_id: '789'
   }
 });
 
