@@ -90,6 +90,30 @@ export interface WorkflowListOptions {
   include?: string;
 }
 
+export interface WorkflowCardsListWhereOptions {
+  /** Query on a related assignee */
+  assignee_id?: string;
+  /** Query on a specific overdue status */
+  overdue?: string;
+  /** Query on a specific stage */
+  stage?: string;
+  /** Allow additional where parameters */
+  [key: string]: string | undefined;
+}
+
+export interface WorkflowCardsListOptions {
+  /** Number of records per page (default: 25, min: 1, max: 100) */
+  per_page?: number;
+  /** Number of records to skip for pagination */
+  offset?: number;
+  /** Filter conditions */
+  where?: WorkflowCardsListWhereOptions;
+  /** Sort order (e.g., 'created_at', '-updated_at', 'stage') */
+  order?: string;
+  /** Comma-separated string of related resources to include (assignee, current_step, person, workflow) */
+  include?: string;
+}
+
 export class WorkflowResource {
   constructor(
     private client: PlanningCenter,
@@ -186,15 +210,41 @@ export class WorkflowResource {
     );
   }
 
-  async listCards(): Promise<ApiResponse<WorkflowCard[]>> {
+  async listCards(options?: WorkflowCardsListOptions): Promise<ApiResponse<WorkflowCard[]>> {
     if (!this.workflowId) {
       throw new Error("Workflow ID is required for listing cards");
     }
 
-    return this.client.request<WorkflowCard[]>(
-      "GET",
-      `/people/v2/workflows/${this.workflowId}/cards`
-    );
+    const params = new URLSearchParams();
+
+    if (options?.per_page !== undefined) {
+      params.append("per_page", options.per_page.toString());
+    }
+
+    if (options?.offset !== undefined) {
+      params.append("offset", options.offset.toString());
+    }
+
+    if (options?.where) {
+      Object.entries(options.where).forEach(([key, value]) => {
+        if (value !== undefined) {
+          params.append(`where[${key}]`, value);
+        }
+      });
+    }
+
+    if (options?.order) {
+      params.append("order", options.order);
+    }
+
+    if (options?.include) {
+      params.append("include", options.include);
+    }
+
+    const queryString = params.toString();
+    const path = `/people/v2/workflows/${this.workflowId}/cards${queryString ? `?${queryString}` : ""}`;
+
+    return this.client.request<WorkflowCard[]>("GET", path);
   }
 
   async createCard(attributes: {

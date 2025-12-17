@@ -22,7 +22,12 @@ List all workflows with optional filtering and pagination.
 - `options.offset` (optional): Number of records to skip for pagination
 - `options.where` (optional): Object with key-value pairs for filtering (see Where Options below)
 - `options.order` (optional): Sort order (e.g., `'name'`, `'-created_at'`)
-- `options.include` (optional): Comma-separated string of related resources to include
+- `options.include` (optional): Comma-separated string of related resources to include (see Include Options below)
+
+**Include Options:**
+- `category` - Include associated workflow category
+- `shares` - Include associated workflow shares
+- `steps` - Include associated workflow steps
 
 **Where Options:**
 - `name` - Filter by workflow name
@@ -61,13 +66,19 @@ const response = await client.people.workflow().list({
   order: 'name'
 });
 
+// With includes
+const response = await client.people.workflow().list({
+  include: 'category,steps'
+});
+
 // Combined filters
 const response = await client.people.workflow().list({
   where: {
     workflow_category_id: '456',
     campus_id: '789'
   },
-  order: '-created_at'
+  order: '-created_at',
+  include: 'steps'
 });
 ```
 
@@ -123,16 +134,53 @@ Delete a workflow.
 await client.people.workflow('123').delete();
 ```
 
-### `listCards()`
+### `listCards(options?)`
 
-List all workflow cards in this workflow.
+List all workflow cards in this workflow with optional filtering and pagination.
+
+**Parameters:**
+- `options.per_page` (optional): Number of records per page (default: 25, min: 1, max: 100)
+- `options.offset` (optional): Number of records to skip for pagination
+- `options.where` (optional): Object with key-value pairs for filtering (see Where Options below)
+- `options.order` (optional): Sort order (e.g., `'created_at'`, `'-updated_at'`, `'stage'`)
+- `options.include` (optional): Comma-separated string of related resources to include (see Include Options below)
+
+**Include Options:**
+- `assignee` - Include associated assignee (Person)
+- `current_step` - Include associated current step (WorkflowStep)
+- `person` - Include associated person (Person)
+- `workflow` - Include associated workflow (Workflow)
+
+**Where Options:**
+- `assignee_id` - Filter by assignee ID
+- `overdue` - Filter by overdue status (`'true'` or `'false'`)
+- `stage` - Filter by stage
 
 **Returns:** Array of workflow cards
 
 **Example:**
 ```typescript
+// Basic list
 const response = await client.people.workflow('123').listCards();
 console.log(response.data);
+
+// With includes
+const response = await client.people.workflow('123').listCards({
+  include: 'assignee,current_step,person'
+});
+
+// Filter by overdue
+const response = await client.people.workflow('123').listCards({
+  where: { overdue: 'true' }
+});
+
+// Combined options
+const response = await client.people.workflow('123').listCards({
+  per_page: 50,
+  where: { overdue: 'true' },
+  include: 'assignee,current_step',
+  order: '-created_at'
+});
 ```
 
 ### `createCard(attributes)`

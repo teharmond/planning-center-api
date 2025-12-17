@@ -22,7 +22,13 @@ List all workflow cards for a person with optional filtering and pagination.
 - `options.offset` (optional): Number of records to skip for pagination
 - `options.where` (optional): Object with key-value pairs for filtering (see Where Options below)
 - `options.order` (optional): Sort order (e.g., `'created_at'`, `'-updated_at'`, `'stage'`)
-- `options.include` (optional): Comma-separated string of related resources to include
+- `options.include` (optional): Comma-separated string of related resources to include (see Include Options below)
+
+**Include Options:**
+- `assignee` - Include associated assignee (Person)
+- `current_step` - Include associated current step (WorkflowStep)
+- `person` - Include associated person (Person)
+- `workflow` - Include associated workflow (Workflow)
 
 **Where Options:**
 - `assignee_id` - Filter by assignee ID
@@ -69,10 +75,16 @@ const response = await client.people.person('123').workflowCards().list({
   }
 });
 
+// With includes
+const response = await client.people.person('123').workflowCards().list({
+  include: 'assignee,current_step,workflow'
+});
+
 // Combined options
 const response = await client.people.person('123').workflowCards().list({
   per_page: 25,
   order: '-updated_at',
+  where: { overdue: 'true' },
   include: 'assignee,workflow'
 });
 ```
