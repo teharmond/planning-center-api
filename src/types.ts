@@ -340,3 +340,88 @@ export interface EventInstance {
   type: "EventInstance";
   attributes: EventInstanceAttributes;
 }
+
+export interface MessageTemplateAttributes {
+  body?: string;
+  subject?: string;
+}
+
+export interface MessageTemplate {
+  id: string;
+  type: "MessageTemplate";
+  attributes: MessageTemplateAttributes;
+}
+
+export interface NoteAttributes {
+  note?: string;
+  created_at?: string;
+  updated_at?: string;
+  display_date?: string;
+  note_category_id?: string;
+  organization_id?: string;
+  person_id?: string;
+  created_by_id?: string;
+}
+
+export interface NoteCreateAttributes {
+  note: string;
+  note_category_id: string;
+  created_at?: string;
+  updated_at?: string;
+  display_date?: string;
+}
+
+export interface NoteUpdateAttributes {
+  note?: string;
+  note_category_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  display_date?: string;
+}
+
+export interface Note {
+  id: string;
+  type: "Note";
+  attributes: NoteAttributes;
+  relationships?: {
+    note_category?: {
+      data: { type: "NoteCategory"; id: string };
+    };
+    organization?: {
+      data: { type: "Organization"; id: string };
+    };
+    person?: {
+      data: { type: "Person"; id: string };
+    };
+    created_by?: {
+      data: { type: "Person"; id: string };
+    };
+  };
+}
+
+export interface NoteCategoryAttributes {
+  name?: string;
+  locked?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  organization_id?: string;
+}
+
+export interface NoteCategoryCreateAttributes {
+  name: string;
+}
+
+export interface NoteCategoryUpdateAttributes {
+  name?: string;
+}
+
+export interface NoteCategory {
+  id: string;
+  type: "NoteCategory";
+  attributes: NoteCategoryAttributes;
+  relationships?: {
+    organization?: {
+      data: { type: "Organization"; id: string };
+    };
+  };
+}

@@ -147,6 +147,51 @@ await client.people.person('123').workflowShares().update('456', {
 await client.people.person('123').workflowShares().delete('456');
 ```
 
+### [Note](./note.md)
+Manage notes attached to people.
+
+```typescript
+// List notes for a person
+const notes = await client.people.person('123').notes().list();
+
+// List all notes
+const allNotes = await client.people.listNotes();
+
+// Create a note for a person
+const newNote = await client.people.person('123').notes().create({
+  note: 'Important note about this person',
+  note_category_id: '456'
+});
+
+// Update a note
+await client.people.note('789').update({ note: 'Updated content' });
+
+// Delete a note
+await client.people.note('789').delete();
+```
+
+### [Note Category](./note-category.md)
+Manage note categories for organizing notes.
+
+```typescript
+// List all note categories
+const categories = await client.people.listNoteCategories();
+
+// Create a note category
+const newCategory = await client.people.noteCategory().create({
+  name: 'Pastoral Notes'
+});
+
+// Get a specific category
+const category = await client.people.noteCategory('123').get();
+
+// Update a category
+await client.people.noteCategory('123').update({ name: 'Updated Name' });
+
+// Delete a category (also deletes all associated notes)
+await client.people.noteCategory('123').delete();
+```
+
 ## Common Patterns
 
 ### Pagination
@@ -217,3 +262,5 @@ All resources return `ApiResponse<T>` objects with the following structure:
 - [Workflow Step](./workflow-step.md) - Workflow step management
 - [Workflow Card](./workflow-card.md) - Workflow card instances
 - [Workflow Share](./workflow-share.md) - Workflow sharing permissions
+- [Note](./note.md) - Notes attached to people
+- [Note Category](./note-category.md) - Note category management

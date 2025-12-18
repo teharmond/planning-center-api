@@ -1,13 +1,13 @@
 import { PlanningCenter } from "../../client.js";
 import {
   Person,
-  PersonAttributes,
   PersonCreateAttributes,
   PersonUpdateAttributes,
   ApiResponse,
 } from "../../types.js";
 import { WorkflowCardResource } from "./workflow-card.js";
 import { WorkflowShareResource } from "./workflow-share.js";
+import { NoteResource } from "./note.js";
 
 export type PersonInclude =
   | "addresses"
@@ -154,5 +154,15 @@ export class PersonResource {
       throw new Error("Person ID is required for workflow share operations");
     }
     return new WorkflowShareResource(this.client, this.personId);
+  }
+
+  /**
+   * Access notes for this person
+   */
+  notes() {
+    if (!this.personId) {
+      throw new Error("Person ID is required for note operations");
+    }
+    return new NoteResource(this.client, this.personId);
   }
 }
