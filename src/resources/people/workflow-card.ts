@@ -86,6 +86,8 @@ export interface WorkflowCardNote {
 
 export interface WorkflowCardNoteCreateAttributes {
   note: string;
+  /** Optional note category ID to create a matching profile note */
+  note_category_id?: string | number;
 }
 
 export interface WorkflowCardListWhereOptions {

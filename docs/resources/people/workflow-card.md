@@ -332,13 +332,23 @@ Create a new note on a workflow card.
 **Parameters:**
 - `workflowCardId`: The ID of the workflow card
 - `attributes.note` (required): The note content
+- `attributes.note_category_id` (optional): ID of a note category to create a matching profile note
+
+**Note:** If you provide a `note_category_id`, a matching profile note will be created in that category. The `note_category_id` is not stored on the workflow card note itself, so if you need to edit or delete the resulting profile note, you will need to do so via the notes resource (`/people/v2/notes`). You can get all existing note categories at `/people/v2/note_categories`.
 
 **Example:**
 ```typescript
+// Basic note
 const response = await client.people.person('123').workflowCards().createNote('456', {
   note: 'Called and left voicemail. Will follow up next week.'
 });
 console.log(response.data);
+
+// With note category (creates matching profile note)
+const response = await client.people.person('123').workflowCards().createNote('456', {
+  note: 'Called and left voicemail. Will follow up next week.',
+  note_category_id: '789'
+});
 ```
 
 ### `getPerson(workflowCardId)`
