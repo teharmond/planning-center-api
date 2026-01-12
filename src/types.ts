@@ -425,3 +425,149 @@ export interface NoteCategory {
     };
   };
 }
+
+// Home App Types
+
+export interface HomeTaskAttributes {
+  /** The associated resource (if linked to another PCO resource) */
+  associated_resource?: string | null;
+  /** URL to the associated resource */
+  associated_url?: string | null;
+  /** URL for automation (e.g., repeating task) */
+  automation_url?: string | null;
+  /** HTML description of the task */
+  description?: string | null;
+  /** Due date in YYYY-MM-DD format */
+  due_at?: string | null;
+  /** Position of the task in the list */
+  position?: number;
+  /** Status of the task: "incomplete" or "complete" */
+  status?: "incomplete" | "complete";
+  /** When the status was last updated */
+  status_updated_at?: string | null;
+  /** Title of the task */
+  title?: string;
+}
+
+export interface HomeTask {
+  id: string;
+  type: "Task";
+  attributes: HomeTaskAttributes;
+  relationships?: {
+    created_by?: {
+      data: { type: "Collaborator"; id: string } | null;
+    };
+    assignee?: {
+      data: { type: "Collaborator"; id: string } | null;
+    };
+    task_list?: {
+      data: { type: "TaskList"; id: string } | null;
+    };
+  };
+  links?: {
+    self?: string;
+    html?: string;
+    assignee?: string | null;
+    created_by?: string;
+    repeating_task?: string;
+    task_list?: string;
+  };
+}
+
+export interface HomeTaskCreateAttributes {
+  /** Title of the task (required) */
+  title: string;
+  /** HTML description of the task */
+  description?: string | null;
+  /** Due date in YYYY-MM-DD format */
+  due_at?: string | null;
+  /** Status of the task: "incomplete" or "complete" */
+  status?: "incomplete" | "complete";
+  /** URL to associate with the task */
+  associated_url?: string | null;
+  /** Task list ID to add the task to */
+  task_list_id?: string;
+}
+
+export interface HomeTaskUpdateAttributes {
+  /** Title of the task */
+  title?: string;
+  /** HTML description of the task */
+  description?: string | null;
+  /** Due date in YYYY-MM-DD format */
+  due_at?: string | null;
+  /** Status of the task: "incomplete" or "complete" */
+  status?: "incomplete" | "complete";
+  /** Position of the task in the list */
+  position?: number;
+  /** URL to associate with the task */
+  associated_url?: string | null;
+}
+
+// Task List Types
+
+export interface HomeTaskListAttributes {
+  /** Color name for the task list */
+  color_name?: string | null;
+  /** CSS color value */
+  css_color?: string;
+  /** Type of list: "InboxTaskList" or "TaskList" */
+  list_type?: "InboxTaskList" | "TaskList";
+  /** Position of the list */
+  position?: number;
+  /** Title of the task list */
+  title?: string;
+  /** When the task list was last updated */
+  updated_at?: string;
+}
+
+export interface HomeTaskList {
+  id: string;
+  type: "TaskList";
+  attributes: HomeTaskListAttributes;
+  relationships?: {
+    created_by?: {
+      data: { type: "Collaborator"; id: string } | null;
+    };
+  };
+  links?: {
+    self?: string;
+    html?: string;
+  };
+}
+
+export interface HomeTaskListCreateAttributes {
+  /** Title of the task list (required) */
+  title: string;
+  /** Color name for the task list */
+  color_name?: string | null;
+}
+
+export interface HomeTaskListUpdateAttributes {
+  /** Title of the task list */
+  title?: string;
+  /** Color name for the task list */
+  color_name?: string | null;
+  /** Position of the list */
+  position?: number;
+}
+
+// Collaborator Types
+
+export interface HomeCollaboratorAttributes {
+  /** URL to the collaborator's avatar */
+  avatar_url?: string;
+  /** First name of the collaborator */
+  first_name?: string;
+  /** Full name of the collaborator */
+  name?: string;
+}
+
+export interface HomeCollaborator {
+  id: string;
+  type: "Collaborator";
+  attributes: HomeCollaboratorAttributes;
+  links?: {
+    self?: string;
+  };
+}

@@ -293,6 +293,184 @@ Methods available on a person resource:
 - `update(attributes)`: Update a person
 - `delete()`: Delete a person
 
+### Home App
+
+Access the Home app via `pc.home`.
+
+> **Important:** The Home API only supports Personal Access Token (basic) authentication, not OAuth.
+
+#### listTasks(options?)
+
+List tasks for the current user.
+
+```typescript
+// Get all tasks
+const { data } = await pc.home.listTasks();
+
+// Get incomplete tasks
+const { data } = await pc.home.listTasks({
+  filter: "incomplete",
+});
+
+// Search tasks by title
+const { data } = await pc.home.listTasks({
+  where: { search_title: "meeting" },
+});
+
+// Get tasks due today with related data
+const { data, included } = await pc.home.listTasks({
+  filter: "due_today",
+  include: ["assignee", "task_list"],
+  order: "due_at",
+});
+```
+
+**List Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `per_page` | `number` | Results per page (1-100, default: 25) |
+| `offset` | `number` | Pagination offset |
+| `where` | `object` | Query filters (`search_title`) |
+| `order` | `string` | Sort by: `title`, `position`, `due_at` (prefix with `-` for descending) |
+| `include` | `string \| string[]` | Include related resources: `assignee`, `created_by`, `repeating_task`, `task_list` |
+| `filter` | `string \| string[]` | Predefined filters: `incomplete`, `complete`, `incomplete_or_completed_today`, `incomplete_or_completed_last_7_days`, `due_today`, `upcoming` |
+| `autoPaginate` | `boolean` | Override auto-pagination setting |
+
+#### task(id?: string)
+
+Returns a HomeTaskResource for CRUD operations.
+
+```typescript
+// Get a task
+const { data } = await pc.home.task("123").get();
+
+// Get a task with related data
+const { data, included } = await pc.home.task("123").get({
+  include: ["task_list", "created_by"],
+});
+
+// Create a task
+const { data } = await pc.home.task().create({
+  title: "Follow up with team",
+  description: "<div>Discuss project timeline</div>",
+  due_at: "2025-01-15",
+  task_list_id: "456",
+});
+
+// Update a task
+await pc.home.task("123").update({
+  title: "Updated title",
+  status: "complete",
+});
+
+// Delete a task
+await pc.home.task("123").delete();
+```
+
+### HomeTaskResource
+
+Methods available on a task resource:
+
+- `get(options?)`: Get task by ID
+  - `options.include`: Include related resources (`assignee`, `created_by`, `repeating_task`, `task_list`)
+- `create(attributes)`: Create a new task
+  - Required: `title`
+  - Optional: `description`, `due_at`, `status`, `associated_url`, `task_list_id`
+- `update(attributes)`: Update a task
+  - Optional: `title`, `description`, `due_at`, `status`, `position`, `associated_url`
+- `delete()`: Delete a task
+
+#### listTaskLists(options?)
+
+List task lists for the current user.
+
+```typescript
+// Get all task lists
+const { data } = await pc.home.listTaskLists();
+
+// Get standard (non-archived) task lists
+const { data } = await pc.home.listTaskLists({
+  filter: "standard",
+});
+
+// Search task lists by title
+const { data } = await pc.home.listTaskLists({
+  where: { search_title: "Project" },
+});
+
+// Get task lists with collaborators
+const { data, included } = await pc.home.listTaskLists({
+  include: ["collaborators", "created_by"],
+});
+```
+
+**List Task Lists Options:**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `per_page` | `number` | Results per page (1-100, default: 25) |
+| `offset` | `number` | Pagination offset |
+| `where` | `object` | Query filters (`id`, `search_title`) |
+| `order` | `string` | Sort by: `position`, `archived_at`, `updated_at` (prefix with `-` for descending) |
+| `include` | `string \| string[]` | Include related resources: `collaborators`, `created_by` |
+| `filter` | `string \| string[]` | Predefined filters: `archived`, `standard` |
+| `autoPaginate` | `boolean` | Override auto-pagination setting |
+
+#### taskList(id?: string)
+
+Returns a HomeTaskListResource for CRUD operations.
+
+```typescript
+// Get a task list
+const { data } = await pc.home.taskList("456").get();
+
+// Get a task list with includes
+const { data, included } = await pc.home.taskList("456").get({
+  include: ["collaborators", "created_by"],
+});
+
+// Create a task list
+const { data } = await pc.home.taskList().create({
+  title: "New Project",
+  color_name: "blue-base",
+});
+
+// Update a task list
+await pc.home.taskList("456").update({
+  title: "Updated Project Name",
+});
+
+// Delete a task list
+await pc.home.taskList("456").delete();
+
+// List tasks in a task list
+const { data } = await pc.home.taskList("456").listTasks({
+  filter: "incomplete",
+});
+
+// List collaborators for a task list
+const { data } = await pc.home.taskList("456").listCollaborators();
+```
+
+### HomeTaskListResource
+
+Methods available on a task list resource:
+
+- `get(options?)`: Get task list by ID
+  - `options.include`: Include related resources (`collaborators`, `created_by`)
+- `create(attributes)`: Create a new task list
+  - Required: `title`
+  - Optional: `color_name`
+- `update(attributes)`: Update a task list
+  - Optional: `title`, `color_name`, `position`
+- `delete()`: Delete a task list
+- `listTasks(options?)`: List tasks in this task list
+  - Supports same options as `listTasks()` plus additional filters: `completed_today`, `completed_this_week`, `completed_last_7_days`, `due_this_week`, `incomplete_or_completed`
+- `listCollaborators(options?)`: List collaborators for this task list
+  - `options.per_page`: Results per page (1-100)
+  - `options.offset`: Pagination offset
+
 ## License
 
 MIT

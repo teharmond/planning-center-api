@@ -33,3 +33,45 @@ export type {
   Assignee,
 } from "./resources/people/workflow-card.js";
 export type { WorkflowShare } from "./resources/people/workflow-share.js";
+
+// Home resources
+export { HomeTasksListResource } from "./resources/home/tasks-list.js";
+export { HomeTaskResource } from "./resources/home/task.js";
+export { HomeTaskListsListResource } from "./resources/home/task-lists-list.js";
+export { HomeTaskListResource } from "./resources/home/task-list.js";
+export type {
+  HomeTasksListOptions,
+  HomeTasksListWhereOptions,
+  HomeTasksListFilter,
+  HomeTasksListInclude,
+  HomeTasksListOrder,
+} from "./resources/home/tasks-list.js";
+export type { HomeTaskInclude, HomeTaskQueryOptions } from "./resources/home/task.js";
+export type {
+  HomeTaskListsListOptions,
+  HomeTaskListsListWhereOptions,
+  HomeTaskListsListFilter,
+  HomeTaskListsListInclude,
+  HomeTaskListsListOrder,
+} from "./resources/home/task-lists-list.js";
+export type {
+  HomeTaskListInclude,
+  HomeTaskListQueryOptions,
+  HomeTaskListTasksOptions,
+  HomeTaskListTasksFilter,
+  HomeTaskListTasksInclude,
+  HomeTaskListTasksOrder,
+  HomeTaskListTasksWhereOptions,
+} from "./resources/home/task-list.js";
+export type {
+  HomeTask,
+  HomeTaskAttributes,
+  HomeTaskCreateAttributes,
+  HomeTaskUpdateAttributes,
+  HomeTaskList,
+  HomeTaskListAttributes,
+  HomeTaskListCreateAttributes,
+  HomeTaskListUpdateAttributes,
+  HomeCollaborator,
+  HomeCollaboratorAttributes,
+} from "./types.js";
